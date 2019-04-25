@@ -1,4 +1,4 @@
-use super::get_curve_points;
+use super::Spline;
 
 #[test]
 fn compare_tst() {
@@ -109,6 +109,6 @@ fn compare_tst() {
     778.0,
     200.0,
   ];
-  assert_eq!(get_curve_points(&points, 0.5, 16), result);
+  assert_eq!(Spline::from_flatten_points(&points, 0.5, 16), result);
   // println!("{:?}", get_curve_points(&points, 0.5, 16));
 }

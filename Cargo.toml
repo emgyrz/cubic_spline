@@ -1,18 +1,16 @@
 [package]
 name = "cubic_spline"
-version = "0.5.0"
+version = "0.6.0"
 authors = ["mz <emgyrz@gmail.com>"]
 edition = "2018"
 description = "Function that calculates curve points for cubic spline"
 license = "MIT"
 homepage = "https://github.com/emgyrz/cubic_spline"
 repository = "https://github.com/emgyrz/cubic_spline.git"
-keywords = ["cubic", "spline", "curve", "graph"]
+keywords = ["cubic", "spline", "curve", "graph", "interpolation"]
 categories = [ "graphics"]
 
 readme = "README.md"
-
-# catego
 
 [dependencies]
 
