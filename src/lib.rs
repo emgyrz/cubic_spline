@@ -14,7 +14,7 @@ mod test;
 pub struct Spline();
 
 impl Spline {
-  /// Calculates flat vector of point from known points
+  /// Calculates flat vector of points from known points
   ///
   /// Points is vec of `[x, y, x, y, ...]`
   /// # Example
