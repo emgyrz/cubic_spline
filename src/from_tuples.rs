@@ -1,8 +1,12 @@
-pub fn get_curve_points(
-  points: &[(f64, f64)],
-  tension: f64,
-  num_of_segments: u32,
-) -> Vec<(f64, f64)> {
+use super::SplineOpts;
+
+pub fn get_curve_points(points: &[(f64, f64)], opts: &SplineOpts) -> Vec<(f64, f64)> {
+  let SplineOpts {
+    tension,
+    num_of_segments,
+    disallow_x_stepping_back,
+  } = *opts;
+
   let mut pts: Vec<(f64, f64)> = points.into();
 
   let length = pts.len();
@@ -44,10 +48,12 @@ pub fn get_curve_points(
       let mut x = c1 * current.0 + c2 * next.0 + c3 * t1x + c4 * t2x;
       let y = c1 * current.1 + c2 * next.1 + c3 * t1y + c4 * t2y;
 
-      if let Some(last) = result.last() {
-        let last_x = last.0;
-        if x < last_x {
-          x = last_x;
+      if disallow_x_stepping_back {
+        if let Some(last) = result.last() {
+          let last_x = last.0;
+          if x < last_x {
+            x = last_x;
+          }
         }
       }
 

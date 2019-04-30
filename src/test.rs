@@ -1,4 +1,4 @@
-use super::Spline;
+use super::{Spline, SplineOpts};
 
 #[test]
 fn compare_flatten_tst() {
@@ -109,7 +109,12 @@ fn compare_flatten_tst() {
     778.0,
     200.0,
   ];
-  assert_eq!(Spline::from_flatten_points(&points, 0.5, 16), result);
+  let opts = SplineOpts {
+    tension: 0.5,
+    num_of_segments: 16,
+    ..Default::default()
+  };
+  assert_eq!(Spline::from_flatten_points(&points, &opts), result);
 }
 
 #[test]
@@ -170,19 +175,15 @@ fn compare_tupoles_tst() {
     (768.66259765625, 192.2998046875),
     (778.0, 200.0),
   ];
-  println!("{:?}", Spline::from_tuples(&points, 0.5, 16));
-  assert_eq!(Spline::from_tuples(&points, 0.5, 16), result);
-}
 
-#[test]
-fn doc() {
-  static TENSION: f64 = 0.5;
-  static NUM_OF_SEGMENTS: u32 = 35;
+  let opts = SplineOpts {
+    tension: 0.5,
+    num_of_segments: 16,
+    ..Default::default()
+  };
 
-  let points = vec![(10.0, 200.0), (256.0, 390.0), (512.0, 10.0), (778.0, 200.0)];
+  let spline_points = Spline::from_tuples(&points, &opts);
+  // println!("{:?}", spline_points);
 
-  let spline_points = Spline::from_tuples(&points, TENSION, NUM_OF_SEGMENTS);
-
-  let (last_x, last_y) = spline_points.last().unwrap();
-  assert_eq!(*last_y, 200.0_f64);
+  assert_eq!(spline_points, result);
 }
