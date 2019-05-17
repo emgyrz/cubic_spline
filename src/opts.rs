@@ -1,7 +1,7 @@
 /// Options for the spline
 ///
 pub struct SplineOpts {
-  /// If `true` checks that every x value of point less than previous
+  /// If `true` checks that every x value of point is greater than previous
   ///
   /// default is `false`
   pub disallow_x_stepping_back: bool,
