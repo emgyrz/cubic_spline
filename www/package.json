@@ -1,0 +1,40 @@
+{
+  "name": "cubic_spline_demo",
+  "version": "1.0.0",
+  "description": "Demo for cubic_spline",
+  "scripts": {
+    "build": "webpack --config webpack.config.js",
+    "start": "webpack-dev-server"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/emgyrz/cubic_spline.git"
+  },
+  "keywords": [
+    "cubic",
+    "spline",
+    "rust"
+  ],
+  "author": "mz <emgyrz@gmail.com>",
+  "homepage": "https://github.com/emgyrz/cubic_spline",
+  "devDependencies": {
+    "copy-webpack-plugin": "^5.0.0",
+    "css-loader": "^2.1.1",
+    "node-sass": "^4.12.0",
+    "sass-loader": "^7.1.0",
+    "style-loader": "^0.23.1",
+    "ts-loader": "^6.0.0",
+    "typescript": "^3.4.5",
+    "webpack": "^4.29.3",
+    "webpack-cli": "^3.1.0",
+    "webpack-dev-server": "^3.1.5"
+  },
+  "dependencies": {
+    "@types/node": "^12.0.2",
+    "@types/react": "^16.8.17",
+    "@types/react-dom": "^16.8.4",
+    "bulma": "^0.7.5",
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6"
+  }
+}

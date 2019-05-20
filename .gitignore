@@ -5,14 +5,11 @@ Cargo.lock
 /.vscode
 /wasm
 /tests
-/www
+
 /www/node_modules
 /www/dist
+/www/pkg
 /www/yarn.lock
-
-/demo/node_modules
-/demo/yarn.lock
-/demo
 
 
 **/npm-debug.log*
