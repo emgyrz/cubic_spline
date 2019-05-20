@@ -4,7 +4,8 @@
 
 Interpolation methods for computation of cubic spline points within the range of a discrete set of known points.
 
-[Online documentation](https://docs.rs/cubic_spline/0.7.2/cubic_spline/)
+[Online documentation](https://docs.rs/cubic_spline/0.7.5/cubic_spline/)
+[Demo](https://emgyrz.github.io/cubic_spline/)
 
 ### Example for flatten vec
 ```rust

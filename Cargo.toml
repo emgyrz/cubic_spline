@@ -1,6 +1,6 @@
 [package]
 name = "cubic_spline"
-version = "0.7.2"
+version = "0.7.5"
 authors = ["mz <emgyrz@gmail.com>"]
 edition = "2018"
 description = "Function that calculates curve points for cubic spline"
