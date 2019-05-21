@@ -1,6 +1,7 @@
 # cubic_spline
 
 [![Crates.io](https://img.shields.io/crates/v/cubic_spline.svg)](https://crates.io/crates/cubic_spline/)
+[![npm](https://img.shields.io/npm/v/cubic-spline-rs.svg?style=flat)](https://www.npmjs.com/package/cubic-spline-rs)
 
 Interpolation methods for computation of cubic spline points within the range of a discrete set of known points.
 
