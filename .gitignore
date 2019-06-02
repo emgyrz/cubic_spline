@@ -6,6 +6,10 @@ Cargo.lock
 /tests
 /www
 /node_modules
+Cargo.toml
+LICENSE
+README.md
+
 
 
 
