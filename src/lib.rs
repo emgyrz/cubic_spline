@@ -60,11 +60,24 @@ impl Spline {
 
 #[cfg(target_arch = "wasm32")]
 #[wasm_bindgen]
-pub fn getCurvePoints(pts: Vec<f64>, tension: f64, num_of_segments: u32) -> Vec<f64> {
-  let opts = SplineOpts {
-    tension,
-    num_of_segments,
-    disallow_x_stepping_back: true,
-  };
+pub fn getCurvePoints(
+  pts: Vec<f64>,
+  tension: Option<f64>,
+  num_of_segments: Option<u32>,
+  disallow_x_stepping_back: Option<bool>,
+) -> Vec<f64> {
+
+  let mut opts: SplineOpts = Default::default();
+
+  if let Some(tension) = tension {
+    opts.tension = tension;
+  }
+  if let Some(num_of_segments) = num_of_segments {
+    opts.num_of_segments = num_of_segments;
+  }
+  if let Some(disallow_x_stepping_back) = disallow_x_stepping_back {
+    opts.disallow_x_stepping_back = disallow_x_stepping_back;
+  }
+
   Spline::from_flatten_points(&pts, &opts)
 }

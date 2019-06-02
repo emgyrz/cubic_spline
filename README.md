@@ -5,7 +5,7 @@
 
 Interpolation methods for computation of cubic spline points within the range of a discrete set of known points.
 
-[Online documentation](https://docs.rs/cubic_spline/0.7.5/cubic_spline/)
+[Online documentation](https://docs.rs/cubic_spline/0.7.6/cubic_spline/)
 <br />
 [Demo](https://emgyrz.github.io/cubic_spline/)
 
@@ -34,6 +34,22 @@ let spline_points = Spline::from_tuples(&points, &opts);
 
 let (last_x, last_y) = spline_points.last().unwrap();
 assert_eq!(last_y, 200.0);
+```
+
+### Example for js
+```js
+import { getCurvePoints } from 'cubic-spline-rs'
+
+const NUM_OF_SEGMENTS = 22
+
+const points = [10.0, 200.0, 256.0, 390.0, 512.0, 10.0, 778.0, 200.0]
+
+const curvePoints = getCurvePoints( points, {
+  num_of_segments: NUM_OF_SEGMENTS, // *optional
+  // tension: 0.5, // *optional
+  // disallow_x_stepping_back: false, // *optional
+} )
+
 ```
 
 
