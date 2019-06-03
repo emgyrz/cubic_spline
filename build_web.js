@@ -53,6 +53,7 @@ async function editPackageJson() {
   TPL_FILES.forEach(fName => !pkg.files.includes(fName) && pkg.files.push(fName))
   pkg.module = 'index.js'
   pkg.types = 'index.d.ts'
+  pkg.name = 'cubic-spline-rs'
 
   fs.writeFileSync(pkgJsonPath, JSON.stringify(pkg, null, '  '))
 }
