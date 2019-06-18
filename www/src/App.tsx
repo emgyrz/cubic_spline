@@ -1,5 +1,6 @@
 import * as React from 'react';
 import Points from './comps/Points'
+import Inp from './comps/Input'
 import drawSpline from './spline'
 
 type NullNum = number | null
@@ -158,7 +159,17 @@ class App extends React.Component<{}, IState> {
             <div className="field">
               <label className="label">Tension</label>
               <div className="control">
-                <input
+                <Inp
+                  className="input is-primary"
+                  type="text"
+                  name="tension"
+                  placeholder="Tension"
+                  value={this.state.tension}
+                  onchange={tension => {
+                    this.setState({ tension })
+                  }}
+                />
+                {/* <input
                   className="input is-primary"
                   type="text"
                   name="tension"
@@ -172,7 +183,7 @@ class App extends React.Component<{}, IState> {
                     val = ev.deltaY < 0 ? val + 0.1 : val - 0.1
                     this.setState({ tension: val })
                   }}
-                />
+                /> */}
               </div>
             </div>
 
