@@ -11,8 +11,9 @@ function drawSpline(ctx, ptsa, attrs, showPoints) {
 
   ctx.beginPath()
 
-  const curvePoints = getCurvePoints(ptsa, {})
-  console.log('curvePoints: ', curvePoints);
+  const { tension, numOfSegments } = attrs
+
+  const curvePoints = getCurvePoints(ptsa, { tension, num_of_segments: numOfSegments })
 
   drawLines(ctx, curvePoints)
 

@@ -6,6 +6,8 @@ type NullNum = number | null
 type PointType = [NullNum, NullNum]
 interface IState {
   points: PointType[];
+  tension: number;
+  numOfSegments: number;
 }
 
 const startPoints: PointType[] = [
@@ -23,7 +25,9 @@ const startPoints: PointType[] = [
 
 class App extends React.Component<{}, IState> {
   state: IState = {
-    points: startPoints
+    points: startPoints,
+    tension: 0.5,
+    numOfSegments: 16,
   }
 
   canv = React.createRef<HTMLCanvasElement>()
@@ -33,7 +37,6 @@ class App extends React.Component<{}, IState> {
     const canv = this.canv.current
     if (canv === null) return
     const h = canv.height
-    console.log('h: ', h);
 
     const validPoints: number[] = []
 
@@ -50,7 +53,29 @@ class App extends React.Component<{}, IState> {
     this.setState({ points: pts })
   }
 
-  componentWillUpdate(prevState: IState, nextState: IState) {
+  handleInputChange = (ev: React.FormEvent<HTMLInputElement>) => {
+    const { name, value } = ev.currentTarget
+    switch (name) {
+      case 'numOfSegments':
+        const val = parseInt(value)
+        if (!Number.isNaN(val)) {
+          this.setState({ numOfSegments: val })
+        }
+        break
+
+      case 'tension': {
+        const val = parseFloat(value)
+        if (!Number.isNaN(val)) {
+          this.setState({ tension: val })
+        }
+        break
+      }
+    }
+  }
+
+
+
+  componentDidUpdate(prevState: IState, nextState: IState) {
     this.redraw(nextState.points)
   }
 
@@ -85,9 +110,12 @@ class App extends React.Component<{}, IState> {
 
     this.clearCanv()
     const ctx = this.getCtx()
+    const { tension, numOfSegments } = this.state
     drawSpline(ctx, pts, {
       lineWidth: 3,
       strokeStyle: '#7B1FA2',
+      tension,
+      numOfSegments,
       // fillStyle: "#E64A19"
     }, true)
 
@@ -122,7 +150,7 @@ class App extends React.Component<{}, IState> {
                   type="text"
                   placeholder="Color"
                   disabled
-                  value="green"
+                  value="*"
                 />
               </div>
             </div>
@@ -133,9 +161,17 @@ class App extends React.Component<{}, IState> {
                 <input
                   className="input is-primary"
                   type="text"
+                  name="tension"
                   placeholder="Tension"
-                  disabled
-                  value="0.5"
+                  onChange={this.handleInputChange}
+                  value={this.state.tension}
+                  onWheel={(ev) => {
+                    ev.stopPropagation()
+                    ev.preventDefault()
+                    let val = this.state.tension
+                    val = ev.deltaY < 0 ? val + 0.1 : val - 0.1
+                    this.setState({ tension: val })
+                  }}
                 />
               </div>
             </div>
@@ -144,11 +180,20 @@ class App extends React.Component<{}, IState> {
               <label className="label">Number of segments</label>
               <div className="control">
                 <input
+                  name="numOfSegments"
                   className="input is-primary"
                   type="text"
                   placeholder="Number of segments"
-                  disabled
-                  value={16}
+                  onChange={this.handleInputChange}
+                  value={this.state.numOfSegments}
+                  onWheel={(ev) => {
+                    ev.stopPropagation()
+                    ev.preventDefault()
+                    let val = this.state.numOfSegments
+                    val = ev.deltaY < 0 ? val + 1 : val - 1
+                    val = val < 1 ? 1 : val
+                    this.setState({ numOfSegments: val })
+                  }}
                 />
               </div>
             </div>
