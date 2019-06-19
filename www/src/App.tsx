@@ -9,7 +9,11 @@ interface IState {
   points: PointType[];
   tension: number;
   numOfSegments: number;
+  disallowXsteppingBack: boolean;
 }
+
+const TENSION_DEFAULT = 0.5
+const NOS_DEFAULT = 16
 
 const startPoints: PointType[] = [
   [0, 2],
@@ -29,6 +33,7 @@ class App extends React.Component<{}, IState> {
     points: startPoints,
     tension: 0.5,
     numOfSegments: 16,
+    disallowXsteppingBack: false,
   }
 
   canv = React.createRef<HTMLCanvasElement>()
@@ -54,30 +59,23 @@ class App extends React.Component<{}, IState> {
     this.setState({ points: pts })
   }
 
-  handleInputChange = (ev: React.FormEvent<HTMLInputElement>) => {
-    const { name, value } = ev.currentTarget
-    switch (name) {
-      case 'numOfSegments':
-        const val = parseInt(value)
-        if (!Number.isNaN(val)) {
-          this.setState({ numOfSegments: val })
-        }
-        break
 
-      case 'tension': {
-        const val = parseFloat(value)
-        if (!Number.isNaN(val)) {
-          this.setState({ tension: val })
-        }
-        break
-      }
-    }
+  handleTensionChange = ( tension: NullNum ) => {
+    this.setState( { tension })
   }
 
 
+  handleNumOfSegmentsChange = ( num: NullNum ) => {
+    if ( num !== null && num < 1 ) return
+    this.setState( { numOfSegments: num })
+  }
 
-  componentDidUpdate(prevState: IState, nextState: IState) {
-    this.redraw(nextState.points)
+  handleDisallowXsteppingBackChange = ( ev ) => {
+    this.setState({disallowXsteppingBack: ev.currentTarget.checked })
+  }
+
+  componentDidUpdate() {
+    this.redraw()
   }
 
   componentDidMount() {
@@ -106,17 +104,18 @@ class App extends React.Component<{}, IState> {
     ctx.clearRect(0, 0, canv.width, canv.height)
   }
 
-  redraw(points?: Array<[NullNum, NullNum]>) {
-    const pts = this.preparePoints(points || this.state.points)
+  redraw() {
+    const pts = this.preparePoints(this.state.points)
 
     this.clearCanv()
     const ctx = this.getCtx()
-    const { tension, numOfSegments } = this.state
+    const { tension, numOfSegments, disallowXsteppingBack } = this.state
     drawSpline(ctx, pts, {
       lineWidth: 3,
       strokeStyle: '#7B1FA2',
-      tension,
-      numOfSegments,
+      tension: tension === null ? TENSION_DEFAULT : tension,
+      numOfSegments: numOfSegments === null ? NOS_DEFAULT : numOfSegments,
+      disallowXsteppingBack,
       // fillStyle: "#E64A19"
     }, true)
 
@@ -143,7 +142,7 @@ class App extends React.Component<{}, IState> {
           <div className="settings column is-half">
             <h2 className="title">Settings</h2>
 
-            <div className="field">
+            {/* <div className="field">
               <label className="label">Color</label>
               <div className="control">
                 <input
@@ -154,60 +153,46 @@ class App extends React.Component<{}, IState> {
                   value="*"
                 />
               </div>
-            </div>
+            </div> */}
 
-            <div className="field">
-              <label className="label">Tension</label>
+            <div className="field is-horizontal">
+              <label className="label">tension:</label>
               <div className="control">
                 <Inp
                   className="input is-primary"
-                  type="text"
-                  name="tension"
+                  step={0.1}
                   placeholder="Tension"
                   value={this.state.tension}
-                  onchange={tension => {
-                    this.setState({ tension })
-                  }}
+                  onInpChange={this.handleTensionChange}
                 />
-                {/* <input
-                  className="input is-primary"
-                  type="text"
-                  name="tension"
-                  placeholder="Tension"
-                  onChange={this.handleInputChange}
-                  value={this.state.tension}
-                  onWheel={(ev) => {
-                    ev.stopPropagation()
-                    ev.preventDefault()
-                    let val = this.state.tension
-                    val = ev.deltaY < 0 ? val + 0.1 : val - 0.1
-                    this.setState({ tension: val })
-                  }}
-                /> */}
               </div>
             </div>
 
-            <div className="field">
-              <label className="label">Number of segments</label>
+            <div className="field is-horizontal">
+              <label className="label">num_of_segments:</label>
               <div className="control">
-                <input
-                  name="numOfSegments"
+                <Inp
                   className="input is-primary"
-                  type="text"
-                  placeholder="Number of segments"
-                  onChange={this.handleInputChange}
                   value={this.state.numOfSegments}
-                  onWheel={(ev) => {
-                    ev.stopPropagation()
-                    ev.preventDefault()
-                    let val = this.state.numOfSegments
-                    val = ev.deltaY < 0 ? val + 1 : val - 1
-                    val = val < 1 ? 1 : val
-                    this.setState({ numOfSegments: val })
-                  }}
+                  onInpChange={this.handleNumOfSegmentsChange}
                 />
               </div>
             </div>
+
+            <div className="field is-horizontal">
+              <label className="label">disallow_x_stepping_back:</label>
+              <div className="control">
+                <label className="checkbox">
+                  <input
+                    type="checkbox"
+                    checked={this.state.disallowXsteppingBack}
+                    onChange={this.handleDisallowXsteppingBackChange}
+                  />
+                </label>
+              </div>
+            </div>
+
+
 
           </div>
 

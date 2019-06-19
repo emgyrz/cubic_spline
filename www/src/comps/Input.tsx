@@ -2,16 +2,15 @@ import * as React from 'react';
 
 type NullNum = number | null
 
-interface IProps {
-  value: number
-  onChange: (val: number) => void
-  step: number
-  min: NullNum
+interface IProps extends React.HTMLAttributes<HTMLInputElement>{
+  value: NullNum;
+  onInpChange: (val: NullNum) => void;
+  step?: number;
+  min?: NullNum;
 }
 
-
-class Inp extends React.Component<IProps> {
-  defaultProps: {
+class Inp extends React.Component<IProps, {}> {
+  static defaultProps = {
     min: null,
     step: 1
   }
@@ -23,33 +22,34 @@ class Inp extends React.Component<IProps> {
 
   handleChange = (ev) => {
     let val = ev.currentTarget.value
-    this.props.onChange(parseFloat(val))
+    val = val === '' ? null : parseFloat(val)
+    this.props.onInpChange( val )
   }
 
   handleWheel = (ev) => {
     ev.stopPropagation()
     ev.preventDefault()
-    const { value, min, step, onChange } = this.props
+    const { value, min, step, onInpChange } = this.props
     let val = this.props.value
+    if ( val === null ) return
     if (min !== null) {
       val = val < min ? val : min
     }
     val = ev.deltaY < 0 ? val + step : val - step
-    onChange(val)
+    onInpChange(val)
   }
 
   render() {
-    const { value, onChange, ...otherProps } = this.props
+    const { value, onInpChange, ...otherProps } = this.props
+    let val = value === null ? '' : value
     return (
       <input
-        className="input is-primary"
-        type="text"
-        name="tension"
-        placeholder="Tension"
-        onChange={this.handleChange}
-        value={this.props.value}
-        onWheel={this.handleWheel}
         {...otherProps}
+        type="text"
+        onChange={this.handleChange}
+        value={val}
+        onWheel={this.handleWheel}
+        style={{ cursor: 'ns-resize' }}
       />
     )
   }

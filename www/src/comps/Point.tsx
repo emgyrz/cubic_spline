@@ -1,4 +1,5 @@
 import * as React from 'react';
+import Inp from './Input'
 
 type NullNum = number | null
 
@@ -13,8 +14,22 @@ interface IProps {
 
 class Point extends React.Component<IProps> {
 
-  static toVal(n: NullNum): string {
-    return typeof n === 'number' ? n.toString() : ''
+  handleXChange = ( x: NullNum ) => {
+    this.emitChange( 'x', x )
+  }
+
+  handleYChange = ( y: NullNum ) => {
+    this.emitChange( 'y', y )
+  }
+
+  emitChange( key: 'x' | 'y', val: NullNum ) {
+    const res = {
+      x: this.props.x,
+      y: this.props.y,
+      idx: this.props.idx
+    }
+    res[key] = val
+    this.props.onChange(res)
   }
 
 
@@ -38,7 +53,6 @@ class Point extends React.Component<IProps> {
   }
 
   render() {
-    const { toVal } = Point
     const { idx, x, y } = this.props
     return (
       <div className="field is-horizontal has-addons">
@@ -48,25 +62,21 @@ class Point extends React.Component<IProps> {
         <div className="field-body" style={{ alignItems: 'center' }}>
           <div className="field" style={{ maxWidth: 100 }}>
             <p className="control is-expanded">
-              <input
+              <Inp
                 className="input is-success"
-                type="text"
-                placeholder="X"
-                value={toVal(x)}
-                data-plane="x"
-                onChange={this.handleChange}
+                value={x}
+                onInpChange={this.handleXChange}
+                step={5}
               />
             </p>
           </div>
           <div className="field" style={{ maxWidth: 100 }}>
             <p className="control is-expanded">
-              <input
+              <Inp
                 className="input is-success"
-                type="text"
-                placeholder="Y"
-                value={toVal(y)}
-                data-plane="y"
-                onChange={this.handleChange}
+                value={y}
+                onInpChange={this.handleYChange}
+                step={5}
               />
             </p>
           </div>
