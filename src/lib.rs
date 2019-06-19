@@ -1,6 +1,7 @@
 mod from_raw;
 mod from_tuples;
 mod opts;
+mod convert;
 
 #[cfg(test)]
 mod test;
@@ -33,6 +34,8 @@ impl Spline {
   /// assert_eq!(spline_points.len(), 102);
   /// ```
   pub fn from_flatten_points(points: &[f64], opts: &SplineOpts) -> Vec<f64> {
+    // let pts = convert::flatten_to_tuples(points);
+    // from_tuples::get_curve_points(pts, opts)
     from_raw::get_curve_points(points, opts)
   }
 
