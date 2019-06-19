@@ -98,3 +98,62 @@ canvas {
   max-width: 30px;
 }
 
+
+.points {
+  .field {
+    &-label {
+      padding-top: 0;
+    }
+    margin-bottom: 3px;
+    input {
+      font-size: 12px;
+    }
+  }
+
+  .addBtn {
+    margin-top: 15px;
+    width: 300px;
+    font-size: 13px;
+  }
+}
+
+.settings {
+  .field {
+    // align-items: center;
+    background: #f1f1f1;
+    font-family: monospace;
+    border-radius: 4px;
+    line-height: 3;
+    padding: 0 10px;
+
+    > .label {
+      font-weight: normal;
+      margin-bottom: 0;
+      margin-right: 15px;
+      // display: inline-block;
+    }
+    // &:not(:last-child):after {
+    //   content: ',';
+    //   display: block;
+    // }
+    input.input {
+      text-align: center;
+      width: 50px;
+      font-size: 13px;
+      font-family: monospace;
+      padding: 0;
+      padding-top: 5px;
+    }
+
+    .control {
+      display: flex;
+      align-items: center;
+    }
+
+    .checkbox {
+      display: inline-flex;
+      align-items: center;
+      height: 100%;
+    }
+  }
+}

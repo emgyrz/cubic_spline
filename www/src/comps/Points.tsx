@@ -47,9 +47,21 @@ class Points extends React.Component<IProps> {
     return (
       <div className="points column is-half">
         <h2 className="title">Points</h2>
+        <div className="field is-horizontal has-addons">
+          <div className="field-label is-normal">
+          </div>
+          <div className="field-body" style={{ alignItems: 'center' }}>
+            <div className="field" style={{ maxWidth: 100 }}>
+                x
+            </div>
+            <div className="field" style={{ maxWidth: 100 }}>
+                y
+            </div>
+          </div>
+        </div>
         {pts}
         <button
-          className="button is-primary is-outlined"
+          className="button is-primary is-outlined addBtn"
           onClick={this.handleAddClick}
         >
           Add
