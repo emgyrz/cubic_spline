@@ -1,7 +1,7 @@
-mod from_raw;
+mod convert;
 mod from_tuples;
 mod opts;
-mod convert;
+
 
 #[cfg(test)]
 mod test;
@@ -34,9 +34,9 @@ impl Spline {
   /// assert_eq!(spline_points.len(), 102);
   /// ```
   pub fn from_flatten_points(points: &[f64], opts: &SplineOpts) -> Vec<f64> {
-    // let pts = convert::flatten_to_tuples(points);
-    // from_tuples::get_curve_points(pts, opts)
-    from_raw::get_curve_points(points, opts)
+    let pts = convert::flatten_to_tuples(points);
+    let tuples = from_tuples::get_curve_points(&pts, opts);
+    convert::tuples_to_flatten(&tuples)
   }
 
   /// Calculates vector of point tuples from known points
@@ -59,6 +59,40 @@ impl Spline {
   pub fn from_tuples(points: &[(f64, f64)], opts: &SplineOpts) -> Vec<(f64, f64)> {
     from_tuples::get_curve_points(points, opts)
   }
+
+  /// Converts flatten points vector to tuples vector.
+  ///
+  /// # Example
+  /// ```
+  /// use cubic_spline::{Spline};
+  ///
+  /// let points = vec![256.0, 390.0, 512.0, 10.0];
+  ///
+  /// let tuples = Spline::convert_flatten_to_tuples(&point);
+  ///
+  /// assert_eq!( tuples, vec![(256.0, 390.0), (512.0, 10.0)] );
+  /// ```
+  pub fn convert_flatten_to_tuples(pts: &[f64]) -> Vec<(f64, f64)> {
+    convert::flatten_to_tuples(pts)
+  }
+
+
+  /// Converts tuples vector to flatten.
+  ///
+  /// # Example
+  /// ```
+  /// use cubic_spline::{Spline};
+  ///
+  /// let tuples = vec![(256.0, 390.0), (512.0, 10.0)];
+  ///
+  /// let points = Spline::convert_tuples_to_flatten(&tuples);
+  ///
+  /// assert_eq!( points, vec![256.0, 390.0, 512.0, 10.0] );
+  /// ```
+  pub fn convert_tuples_to_flatten(tuples: &[(f64, f64)]) -> Vec<f64> {
+    convert::tuples_to_flatten(tuples)
+  }
+
 }
 
 #[cfg(target_arch = "wasm32")]
