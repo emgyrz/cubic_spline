@@ -2,7 +2,7 @@ import * as React from 'react';
 
 type NullNum = number | null
 
-interface IProps extends React.HTMLAttributes<HTMLInputElement>{
+interface IProps extends React.HTMLAttributes<HTMLInputElement> {
   value: NullNum;
   onInpChange: (val: NullNum) => void;
   step?: number;
@@ -30,7 +30,8 @@ class Inp extends React.Component<IProps, {}> {
   handleChange = (ev) => {
     let val = ev.currentTarget.value
     val = val === '' ? null : parseFloat(val)
-    this.props.onInpChange( val )
+    val = Number.isNaN(val) ? null : val
+    this.props.onInpChange(val)
   }
 
   handleWheel = (ev) => {
@@ -38,7 +39,7 @@ class Inp extends React.Component<IProps, {}> {
     ev.preventDefault()
     const { value, min, step, onInpChange } = this.props
     let val = this.props.value
-    if ( val === null ) return
+    if (val === null) return
     if (min !== null) {
       val = val < min ? val : min
     }
