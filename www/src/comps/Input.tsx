@@ -2,7 +2,7 @@ import * as React from 'react';
 
 type NullNum = number | null
 
-interface IProps extends React.HTMLAttributes<HTMLInputElement>{
+interface IProps extends React.HTMLAttributes<HTMLInputElement> {
   value: NullNum;
   onInpChange: (val: NullNum) => void;
   step?: number;
@@ -15,15 +15,23 @@ class Inp extends React.Component<IProps, {}> {
     step: 1
   }
 
-  static parseNum(n: string) {
+  inp = React.createRef<HTMLInputElement>()
 
+
+  componentDidMount() {
+    this.inp.current.addEventListener("wheel", this.handleWheel)
+  }
+
+  componentWillUnmount() {
+    this.inp.current.removeEventListener("wheel", this.handleWheel)
   }
 
 
   handleChange = (ev) => {
     let val = ev.currentTarget.value
     val = val === '' ? null : parseFloat(val)
-    this.props.onInpChange( val )
+    val = Number.isNaN(val) ? null : val
+    this.props.onInpChange(val)
   }
 
   handleWheel = (ev) => {
@@ -31,7 +39,7 @@ class Inp extends React.Component<IProps, {}> {
     ev.preventDefault()
     const { value, min, step, onInpChange } = this.props
     let val = this.props.value
-    if ( val === null ) return
+    if (val === null) return
     if (min !== null) {
       val = val < min ? val : min
     }
@@ -48,7 +56,7 @@ class Inp extends React.Component<IProps, {}> {
         type="text"
         onChange={this.handleChange}
         value={val}
-        onWheel={this.handleWheel}
+        ref={this.inp}
         style={{ cursor: 'ns-resize' }}
       />
     )

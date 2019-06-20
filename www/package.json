@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Demo for cubic_spline",
   "scripts": {
-    "build": "webpack --config webpack.config.js",
+    "build": "webpack --config webpack.config.js -p",
     "start": "webpack-dev-server"
   },
   "repository": {

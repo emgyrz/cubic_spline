@@ -1,13 +1,15 @@
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const path = require('path');
 
+const isProd = process.env.NODE_ENV === 'production'
+
 module.exports = {
   entry: "./index.ts",
   output: {
     path: path.resolve(__dirname, "dist"),
     filename: "main.js",
   },
-  mode: "development",
+  mode: 'development',
   plugins: [
     new CopyWebpackPlugin(['index.html'])
   ],
