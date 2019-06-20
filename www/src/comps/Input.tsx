@@ -15,8 +15,15 @@ class Inp extends React.Component<IProps, {}> {
     step: 1
   }
 
-  static parseNum(n: string) {
+  inp = React.createRef<HTMLInputElement>()
 
+
+  componentDidMount() {
+    this.inp.current.addEventListener("wheel", this.handleWheel)
+  }
+
+  componentWillUnmount() {
+    this.inp.current.removeEventListener("wheel", this.handleWheel)
   }
 
 
@@ -48,7 +55,7 @@ class Inp extends React.Component<IProps, {}> {
         type="text"
         onChange={this.handleChange}
         value={val}
-        onWheel={this.handleWheel}
+        ref={this.inp}
         style={{ cursor: 'ns-resize' }}
       />
     )
