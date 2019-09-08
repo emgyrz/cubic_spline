@@ -1,7 +1,8 @@
+mod calc;
 mod convert;
 mod from_tuples;
 mod opts;
-
+mod points;
 
 #[cfg(test)]
 mod test;
@@ -76,7 +77,6 @@ impl Spline {
     convert::flatten_to_tuples(pts)
   }
 
-
   /// Converts tuples vector to flatten.
   ///
   /// # Example
@@ -92,7 +92,6 @@ impl Spline {
   pub fn convert_tuples_to_flatten(tuples: &[(f64, f64)]) -> Vec<f64> {
     convert::tuples_to_flatten(tuples)
   }
-
 }
 
 #[cfg(target_arch = "wasm32")]
@@ -103,7 +102,6 @@ pub fn getCurvePoints(
   num_of_segments: Option<u32>,
   disallow_x_stepping_back: Option<bool>,
 ) -> Vec<f64> {
-
   let mut opts: SplineOpts = Default::default();
 
   if let Some(tension) = tension {

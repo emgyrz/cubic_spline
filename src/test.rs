@@ -1,11 +1,12 @@
-use super::{Spline, SplineOpts};
+use super::{
+  points::{CalcPoints, GetPoint, Points},
+  Spline, SplineOpts,
+};
+use std::time::{Duration, Instant};
 
-#[test]
-fn compare_flatten_tst() {
-  let points = vec![10.0, 200.0, 256.0, 390.0, 512.0, 10.0, 778.0, 200.0];
-
-  #[allow(clippy::unreadable_literal)]
-  let result = vec![
+#[allow(clippy::unreadable_literal)]
+fn result_flatten() -> Vec<f64> {
+  vec![
     10.0,
     200.0,
     18.60009765625,
@@ -108,13 +109,54 @@ fn compare_flatten_tst() {
     192.2998046875,
     778.0,
     200.0,
-  ];
+  ]
+}
+
+#[test]
+fn bench1() {
+  let points = vec![10.0, 200.0, 256.0, 390.0, 512.0, 10.0, 778.0, 200.0];
+  // let points = vec![(10.0, 200.0), (256.0, 390.0), (512.0, 10.0), (778.0, 200.0)];
+
   let opts = SplineOpts {
     tension: 0.5,
     num_of_segments: 16,
     ..Default::default()
   };
-  assert_eq!(Spline::from_flatten_points(&points, &opts), result);
+
+  let mut v = Vec::new();
+
+  let start = Instant::now();
+
+  for i in 0..10000 {
+    // let mut ppp = Points::<f64>::new(&points, None);
+    // ppp.calc(&opts);
+    // v.push(ppp.result)
+    v.push(Spline::from_flatten_points(&points, &opts))
+  }
+
+  let duration = start.elapsed();
+
+  println!(">>>>>>>>>>>>   ms {:?}", duration.as_millis());
+  println!("{:?}", v.len());
+}
+
+#[test]
+fn compare_flatten_tst() {
+  let points = vec![10.0, 200.0, 256.0, 390.0, 512.0, 10.0, 778.0, 200.0];
+
+  let opts = SplineOpts {
+    tension: 0.5,
+    num_of_segments: 16,
+    ..Default::default()
+  };
+  assert_eq!(
+    Spline::from_flatten_points(&points, &opts),
+    result_flatten()
+  );
+
+  let mut ppp = Points::<f64>::new(&points, None);
+  ppp.calc(&opts);
+  assert_eq!(ppp.result, result_flatten());
 }
 
 #[test]
