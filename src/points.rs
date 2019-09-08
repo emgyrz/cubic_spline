@@ -2,30 +2,58 @@ use super::SplineOpts;
 
 pub struct Points<'a, T> {
   pts: &'a [T],
-  pub result: Vec<T>,
 }
 
 pub type PointsToCalc<T> = ((T, T), (T, T), (T, T), (T, T));
 
-impl<'a> Points<'a, f64> {
-  pub fn new(pts: &'a [f64], len: Option<usize>) -> Self {
-    Points {
-      pts,
-      result: Vec::with_capacity(len.unwrap_or(pts.len())),
+pub struct SplineResult<T> {
+  pub pts: Vec<T>,
+}
+
+impl<T> SplineResult<T> {
+  pub fn new(capacity: Option<usize>) -> Self {
+    SplineResult { pts: Vec::new() }
+  }
+  pub fn with_capacity(capacity: usize) -> Self {
+    SplineResult {
+      pts: Vec::with_capacity(capacity),
     }
   }
+  pub fn get(self) -> Vec<T> {
+    self.pts
+  }
 }
+
+pub trait PushToResult {
+  fn push_spline_point(&mut self, x: f64, y: f64);
+}
+
+impl PushToResult for SplineResult<(f64, f64)> {
+  fn push_spline_point(&mut self, x: f64, y: f64) {
+    self.pts.push((x, y));
+  }
+}
+impl PushToResult for SplineResult<f64> {
+  fn push_spline_point(&mut self, x: f64, y: f64) {
+    self.pts.push(x);
+    self.pts.push(y);
+  }
+}
+
+impl<'a> Points<'a, f64> {
+  pub fn new(pts: &'a [f64], len: Option<usize>) -> Self {
+    Points { pts }
+  }
+}
+
 impl<'a> Points<'a, (f64, f64)> {
   pub fn new(pts: &'a [(f64, f64)], len: Option<usize>) -> Self {
-    Points {
-      pts,
-      result: Vec::with_capacity(len.unwrap_or(pts.len())),
-    }
+    Points { pts }
   }
 }
 
 pub trait CalcPoints {
-  fn calc(&mut self, opts: &SplineOpts)
+  fn calc<R: PushToResult>(&mut self, opts: &SplineOpts, result: &mut R)
   where
     Self: GetPoint,
   {
@@ -37,21 +65,19 @@ pub trait CalcPoints {
 
     let num_of_segments_f64 = f64::from(num_of_segments);
 
-    for i in 0..(self.len() - 1) {
+    for i in 0..(self.len()) {
+      let (prev, current, next, next2) = if let Some(p) = self.points_to_calc(i) {
+        p
+      } else {
+        continue;
+      };
+
+      let t1x = (next.0 - prev.0) * tension;
+      let t2x = (next2.0 - current.0) * tension;
+      let t1y = (next.1 - prev.1) * tension;
+      let t2y = (next2.1 - current.1) * tension;
+
       for t in 0..=num_of_segments {
-        // let (prev, current, next, next2) = if let Some(p) = self.points_to_calc(i) {
-        //   p
-        // } else {
-        //   continue;
-        // };
-        let (prev, current, next, next2) = self.points_to_calc(i).unwrap();
-
-        let t1x = (next.0 - prev.0) * tension;
-        let t2x = (next2.0 - current.0) * tension;
-        // [(x,y),(x,y),(x,y),]
-        let t1y = (next.1 - prev.1) * tension;
-        let t2y = (next2.1 - current.1) * tension;
-
         let st = f64::from(t) / num_of_segments_f64;
 
         let st_pow2 = st.powi(2);
@@ -75,7 +101,7 @@ pub trait CalcPoints {
             }
           }
         }
-        self.push_to_result(x, y);
+        result.push_spline_point(x, y);
       }
     }
   }
@@ -88,7 +114,6 @@ pub trait GetPoint {
   fn last(&self) -> Option<(f64, f64)> {
     self.get(self.len() - 1)
   }
-  fn push_to_result(&mut self, x: f64, y: f64);
   fn points_to_calc(&self, index: usize) -> Option<PointsToCalc<f64>> {
     let current = if let Some(curr) = self.get(index) {
       curr
@@ -122,9 +147,6 @@ impl<'a> GetPoint for Points<'a, (f64, f64)> {
   fn len(&self) -> usize {
     self.pts.len()
   }
-  fn push_to_result(&mut self, x: f64, y: f64) {
-    self.result.push((x, y));
-  }
 }
 
 impl<'a> GetPoint for Points<'a, f64> {
@@ -136,10 +158,6 @@ impl<'a> GetPoint for Points<'a, f64> {
   }
   fn len(&self) -> usize {
     self.pts.len() / 2
-  }
-  fn push_to_result(&mut self, x: f64, y: f64) {
-    self.result.push(x);
-    self.result.push(y);
   }
 }
 

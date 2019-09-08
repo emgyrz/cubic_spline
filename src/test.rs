@@ -1,8 +1,8 @@
 use super::{
-  points::{CalcPoints, GetPoint, Points},
+  points::{CalcPoints, Points, SplineResult},
   Spline, SplineOpts,
 };
-use std::time::{Duration, Instant};
+use std::time::Instant;
 
 #[allow(clippy::unreadable_literal)]
 fn result_flatten() -> Vec<f64> {
@@ -127,11 +127,14 @@ fn bench1() {
 
   let start = Instant::now();
 
-  for i in 0..10000 {
-    // let mut ppp = Points::<f64>::new(&points, None);
-    // ppp.calc(&opts);
-    // v.push(ppp.result)
-    v.push(Spline::from_flatten_points(&points, &opts))
+  for _ in 0..10000 {
+    let mut ppp = Points::<f64>::new(&points, None);
+    let mut result = SplineResult {
+      pts: Vec::<f64>::new(),
+    };
+    ppp.calc(&opts, &mut result);
+    v.push(result)
+    // v.push(Spline::from_flatten_points(&points, &opts))
   }
 
   let duration = start.elapsed();
@@ -155,8 +158,11 @@ fn compare_flatten_tst() {
   );
 
   let mut ppp = Points::<f64>::new(&points, None);
-  ppp.calc(&opts);
-  assert_eq!(ppp.result, result_flatten());
+  let mut result = SplineResult {
+    pts: Vec::<f64>::new(),
+  };
+  ppp.calc(&opts, &mut result);
+  assert_eq!(result.get(), result_flatten());
 }
 
 #[test]
@@ -228,4 +234,11 @@ fn compare_tupoles_tst() {
   // println!("{:?}", spline_points);
 
   assert_eq!(spline_points, result);
+
+  let mut ppp = Points::<(f64, f64)>::new(&points, None);
+  let mut result = SplineResult {
+    pts: Vec::<(f64, f64)>::new(),
+  };
+  ppp.calc(&opts, &mut result);
+  assert_eq!(spline_points, result.get());
 }

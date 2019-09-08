@@ -1,4 +1,3 @@
-mod calc;
 mod convert;
 mod from_tuples;
 mod opts;
@@ -11,6 +10,7 @@ mod test;
 use wasm_bindgen::prelude::*;
 
 pub use opts::SplineOpts;
+pub use points::{Points,GetPoint,CalcPoints};
 
 ///! Interpolation methods for computation of cubic spline points
 ///! within the range of a discrete set of known points.
@@ -60,6 +60,8 @@ impl Spline {
   pub fn from_tuples(points: &[(f64, f64)], opts: &SplineOpts) -> Vec<(f64, f64)> {
     from_tuples::get_curve_points(points, opts)
   }
+
+
 
   /// Converts flatten points vector to tuples vector.
   ///
