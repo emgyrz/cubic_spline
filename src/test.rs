@@ -1,8 +1,4 @@
-use super::{
-  points::{CalcPoints, Points, SplineResult},
-  Spline, SplineOpts,
-};
-use std::time::Instant;
+use super::{CalcPoints, Spline, SplineOpts, SplineResult, SrcPoints};
 
 #[allow(clippy::unreadable_literal)]
 fn result_flatten() -> Vec<f64> {
@@ -112,36 +108,37 @@ fn result_flatten() -> Vec<f64> {
   ]
 }
 
-#[test]
-fn bench1() {
-  let points = vec![10.0, 200.0, 256.0, 390.0, 512.0, 10.0, 778.0, 200.0];
-  // let points = vec![(10.0, 200.0), (256.0, 390.0), (512.0, 10.0), (778.0, 200.0)];
+// #[test]
+// fn bench1() {
+//   use std::time::Instant;
+//   let points = vec![10.0, 200.0, 256.0, 390.0, 512.0, 10.0, 778.0, 200.0];
+//   // let points = vec![(10.0, 200.0), (256.0, 390.0), (512.0, 10.0), (778.0, 200.0)];
 
-  let opts = SplineOpts {
-    tension: 0.5,
-    num_of_segments: 16,
-    ..Default::default()
-  };
+//   let opts = SplineOpts {
+//     tension: 0.5,
+//     num_of_segments: 16,
+//     ..Default::default()
+//   };
 
-  let mut v = Vec::new();
+//   let mut v = Vec::new();
 
-  let start = Instant::now();
+//   let start = Instant::now();
 
-  for _ in 0..10000 {
-    let mut ppp = Points::<f64>::new(&points, None);
-    let mut result = SplineResult {
-      pts: Vec::<f64>::new(),
-    };
-    ppp.calc(&opts, &mut result);
-    v.push(result)
-    // v.push(Spline::from_flatten_points(&points, &opts))
-  }
+//   let points2 = vec![(10.0, 200.0), (256.0, 390.0), (512.0, 10.0), (778.0, 200.0)];
 
-  let duration = start.elapsed();
+//   for _ in 0..10000 {
+//     let mut ppp = SrcPoints::<(f64, f64)>::new(&points2);
+//     let mut result = SplineResult::<(f64, f64)>::with_capacity(points.len() * 16);
+//     ppp.calc(&opts, &mut result);
+//     v.push(result)
+//     // v.push(Spline::from_flatten_points(&points, &opts))
+//   }
 
-  println!(">>>>>>>>>>>>   ms {:?}", duration.as_millis());
-  println!("{:?}", v.len());
-}
+//   let duration = start.elapsed();
+
+//   println!(">>>>>>>>>>>>   ms {:?}", duration.as_millis());
+//   println!("{:?}", v.len());
+// }
 
 #[test]
 fn compare_flatten_tst() {
@@ -157,10 +154,9 @@ fn compare_flatten_tst() {
     result_flatten()
   );
 
-  let mut ppp = Points::<f64>::new(&points, None);
-  let mut result = SplineResult {
-    pts: Vec::<f64>::new(),
-  };
+  let mut ppp = SrcPoints::<f64>::new(&points);
+  let mut result = SplineResult::<f64>::default();
+
   ppp.calc(&opts, &mut result);
   assert_eq!(result.get(), result_flatten());
 }
@@ -235,10 +231,8 @@ fn compare_tupoles_tst() {
 
   assert_eq!(spline_points, result);
 
-  let mut ppp = Points::<(f64, f64)>::new(&points, None);
-  let mut result = SplineResult {
-    pts: Vec::<(f64, f64)>::new(),
-  };
+  let mut ppp = SrcPoints::<(f64, f64)>::new(&points);
+  let mut result = SplineResult::<(f64, f64)>::default();
   ppp.calc(&opts, &mut result);
   assert_eq!(spline_points, result.get());
 }

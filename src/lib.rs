@@ -1,7 +1,9 @@
+mod calc;
 mod convert;
-mod from_tuples;
+mod impls;
 mod opts;
 mod points;
+mod result;
 
 #[cfg(test)]
 mod test;
@@ -9,8 +11,10 @@ mod test;
 #[cfg(target_arch = "wasm32")]
 use wasm_bindgen::prelude::*;
 
+pub use calc::CalcPoints;
 pub use opts::SplineOpts;
-pub use points::{Points,GetPoint,CalcPoints};
+pub use points::{GetPoint, SrcPoints};
+pub use result::{PushPoint, SplineResult};
 
 ///! Interpolation methods for computation of cubic spline points
 ///! within the range of a discrete set of known points.
@@ -35,9 +39,11 @@ impl Spline {
   /// assert_eq!(spline_points.len(), 102);
   /// ```
   pub fn from_flatten_points(points: &[f64], opts: &SplineOpts) -> Vec<f64> {
-    let pts = convert::flatten_to_tuples(points);
-    let tuples = from_tuples::get_curve_points(&pts, opts);
-    convert::tuples_to_flatten(&tuples)
+    let mut result: SplineResult<f64> =
+      SplineResult::with_capacity((points.len() / 2) * opts.num_of_segments as usize);
+
+    SrcPoints::new(points).calc(opts, &mut result);
+    result.get()
   }
 
   /// Calculates vector of point tuples from known points
@@ -58,10 +64,11 @@ impl Spline {
   /// assert_eq!(*last_y, 200.0_f64);
   /// ```
   pub fn from_tuples(points: &[(f64, f64)], opts: &SplineOpts) -> Vec<(f64, f64)> {
-    from_tuples::get_curve_points(points, opts)
+    let mut result =
+      SplineResult::<(f64, f64)>::with_capacity(points.len() * opts.num_of_segments as usize);
+    SrcPoints::new(points).calc(opts, &mut result);
+    result.get()
   }
-
-
 
   /// Converts flatten points vector to tuples vector.
   ///
@@ -71,7 +78,7 @@ impl Spline {
   ///
   /// let points = vec![256.0, 390.0, 512.0, 10.0];
   ///
-  /// let tuples = Spline::convert_flatten_to_tuples(&point);
+  /// let tuples = Spline::convert_flatten_to_tuples(&points);
   ///
   /// assert_eq!( tuples, vec![(256.0, 390.0), (512.0, 10.0)] );
   /// ```

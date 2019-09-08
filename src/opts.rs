@@ -20,9 +20,10 @@ pub struct SplineOpts {
 impl Default for SplineOpts {
   /// # Example
   /// ```
+  /// use cubic_spline::{Spline, SplineOpts};
   /// let opts = SplineOpts {
-  ///   num_of_segments
-  ///   ..Default::default();
+  ///   num_of_segments: 10,
+  ///   ..Default::default()
   /// };
   ///
   /// let points = vec![10.1, 300.6542, 77.32, 10.42, 375.2, -108.65];
