@@ -5,12 +5,12 @@
 
 Interpolation methods for computation of cubic spline points within the range of a discrete set of known points.
 
-[Online documentation](https://docs.rs/cubic_spline/0.7.8/cubic_spline/)
+[Online documentation](https://docs.rs/cubic_spline/0.8.0/cubic_spline/)
 <br />
 [Demo](https://emgyrz.github.io/cubic_spline/)
 
 
-### Example
+#### Example
 ```rust
 use cubic_spline::{CalcPoints, SplineOpts, SplineResult, SrcPoints};
 
@@ -45,7 +45,7 @@ For this types of points there are two helper functions `Spline::from_flatten_po
 ### Custom points
 
 If you allready have some points to avoid unnecessary copying, creating new `Vec` etc. you can implement `GetPoint` trait. And if you need some particular result implement `PushPoint`.
-### Example
+#### Example
 ```rust
 use cubic_spline::{CalcPoints,SrcPoints,SplineResult,PushPoint,GetPoint,SplineOpts};
 
@@ -85,6 +85,8 @@ let mut result = MyResult(SplineResult::default());
 pts.calc(&SplineOpts::default(), &mut result);
 
 ```
+
+See [here](https://github.com/emgyrz/cubic_spline/tree/master/src/impls)
 
 
 ### Example for js
