@@ -77,6 +77,8 @@
 //! pts.calc(&SplineOpts::default(), &mut result);
 //!
 //! ```
+//! See [here](https://github.com/emgyrz/cubic_spline/tree/master/src/impls) for implementation example
+//!
 //!
 
 mod calc;

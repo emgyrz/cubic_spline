@@ -49,7 +49,36 @@ impl<T> SplineResult<T> {
   }
 }
 
+/// Trait that contains one method to push `x` and `y` to SplineResult ( or your result data )
 pub trait PushPoint {
+  ///
+  /// # Example
+  /// ```
+  /// use cubic_spline::{PushPoint,SplineResult};
+  ///
+  /// struct MyCurvePoints {
+  ///   list: Vec<(f32,f32)>,
+  ///   color: String,
+  ///   target: u8
+  /// }
+  ///
+  /// impl PushPoint for MyCurvePoints {
+  ///   fn push_spline_point(&mut self, x: f64, y: f64) {
+  ///     self.list.push((x as f32, y as f32));
+  ///   }
+  /// }
+  ///
+  /// // or
+  ///
+  /// struct MyResult<T>(T);
+  ///
+  /// impl PushPoint for MyResult<SplineResult<(f64, f64)>> {
+  ///   fn push_spline_point(&mut self, x: f64, y: f64) {
+  ///     self.0.pts().push((x, y));
+  ///   }
+  /// }
+  ///
+  /// ```
   fn push_spline_point(&mut self, x: f64, y: f64);
 }
 

@@ -1,5 +1,12 @@
 use super::{result, GetPoint, SplineOpts};
 
+/// Trait that includes one provided method to calculate curve points
+/// ```ignore
+/// impl<'a> CalcPoints for SrcPoints<'a, (f64, f64)> {}
+///
+/// SrcPoints::new(&points).calc(&spline_options, &mut result_vec);
+///
+/// ```
 pub trait CalcPoints {
   fn calc<R: result::PushPoint>(&self, opts: &SplineOpts, result: &mut R)
   where
