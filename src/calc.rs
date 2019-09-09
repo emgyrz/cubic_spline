@@ -1,7 +1,7 @@
 use super::{result, GetPoint, SplineOpts};
 
 pub trait CalcPoints {
-  fn calc<R: result::PushPoint>(&mut self, opts: &SplineOpts, result: &mut R)
+  fn calc<R: result::PushPoint>(&self, opts: &SplineOpts, result: &mut R)
   where
     Self: GetPoint,
   {

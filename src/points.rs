@@ -17,21 +17,14 @@ impl<'a, T> SrcPoints<'a, T> {
 pub trait GetPoint {
   fn len(&self) -> usize;
   fn get(&self, index: usize) -> Option<(f64, f64)>;
+
+
   fn last(&self) -> Option<(f64, f64)> {
     self.get(self.len() - 1)
   }
   fn points_to_calc(&self, index: usize) -> Option<PointsToCalc<f64>> {
-    let current = if let Some(curr) = self.get(index) {
-      curr
-    } else {
-      return None;
-    };
-
-    let next = if let Some(n) = self.get(index + 1) {
-      n
-    } else {
-      return None;
-    };
+    let current = self.get(index)?;
+    let next = self.get(index + 1)?;
 
     let prev = if index == 0 {
       current
