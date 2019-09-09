@@ -1,4 +1,8 @@
+pub fn points() -> Vec<f64> {
+  vec![10.0, 200.0, 256.0, 390.0, 512.0, 10.0, 778.0, 200.0]
+}
 
+#[allow(clippy::unreadable_literal)]
 pub fn result() -> Vec<f64> {
   vec![
     10.0,
@@ -104,8 +108,4 @@ pub fn result() -> Vec<f64> {
     778.0,
     200.0,
   ]
-}
-
-pub fn points() -> Vec<f64>{
-  vec![10.0, 200.0, 256.0, 390.0, 512.0, 10.0, 778.0, 200.0]
 }

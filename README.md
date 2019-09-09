@@ -9,32 +9,83 @@ Interpolation methods for computation of cubic spline points within the range of
 <br />
 [Demo](https://emgyrz.github.io/cubic_spline/)
 
-### Example for flatten vec
+
+### Example
 ```rust
-use cubic_spline::{Spline, SplineOpts};
-
-let opts: SplineOpts = Default::default();
-
-let points = vec![10.0, 200.0, 256.0, 390.0, 512.0, 10.0, 778.0, 200.0];
-
-let spline_points = Spline::from_flatten_points(&points, &opts);
-
-assert_eq!(spline_points.len(), 102);
-```
-
-### Example for tuples vec
-```rust
-use cubic_spline::{Spline, SplineOpts};
-
-let opts: SplineOpts = Default::default();
+use cubic_spline::{CalcPoints, SplineOpts, SplineResult, SrcPoints};
 
 let points = vec![(10.0, 200.0), (256.0, 390.0), (512.0, 10.0), (778.0, 200.0)];
 
+let opts = SplineOpts {
+  num_of_segments: 16,
+  ..Default::default()
+};
+
+let pts: SrcPoints<(f64, f64)> = SrcPoints::new(&points);
+let mut result = SplineResult::<(f64, f64)>::new();
+pts.calc(&opts, &mut result);
+
+assert_eq!(result.get().len(), 51);
+
+//
+// Same as:
+//
+use cubic_spline::{Spline};
 let spline_points = Spline::from_tuples(&points, &opts);
 
-let (last_x, last_y) = spline_points.last().unwrap();
-assert_eq!(last_y, 200.0);
+assert_eq!(spline_points.len(), 51);
 ```
+
+
+
+For now source and resulting points may be `Vec<f64> - (vec![x,y,x,y,...])` or `Vec<(f64, f64)> - (vec![(x,y),(x,y), ...])`.
+For this types of points there are two helper functions `Spline::from_flatten_points` and `Spline::from_tuples`
+
+
+### Custom points
+
+If you allready have some points to avoid unnecessary copying, creating new `Vec` etc. you can implement `GetPoint` trait. And if you need some particular result implement `PushPoint`.
+### Example
+```rust
+use cubic_spline::{CalcPoints,SrcPoints,SplineResult,PushPoint,GetPoint,SplineOpts};
+
+struct MyPoint {
+  pub top: f32,
+  pub left: f32,
+  pub label: Option<String>,
+}
+
+struct MyResult<T>(T);
+struct MySrcPoint<T>(T);
+
+impl<'a> GetPoint for MySrcPoint<SrcPoints<'a, MyPoint>> {
+  fn get(&self, index: usize) -> Option<(f64, f64)> {
+    self.0.pts().get(index).and_then(|p| {
+      Some((f64::from(p.left), f64::from(p.top)))
+    })
+  }
+  fn len(&self) -> usize {
+    self.0.pts().len()
+  }
+}
+
+impl PushPoint for MyResult<SplineResult<MyPoint>> {
+  fn push_spline_point(&mut self, x: f64, y: f64) {
+    let calculated_point = MyPoint { top: y as f32, left: x as f32, label: None };
+    self.0.pts().push(calculated_point);
+  }
+}
+
+impl<'a> CalcPoints for MySrcPoint<SrcPoints<'a, MyPoint>> {}
+
+
+let points: Vec<MyPoint> = vec![];
+let pts = MySrcPoint(SrcPoints::new(&points));
+let mut result = MyResult(SplineResult::default());
+pts.calc(&SplineOpts::default(), &mut result);
+
+```
+
 
 ### Example for js
 ```js
