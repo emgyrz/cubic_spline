@@ -3,7 +3,6 @@ use super::{CalcPoints, Spline, SplineOpts, SplineResult, SrcPoints};
 mod data_flatten;
 mod data_tuples;
 
-
 #[test]
 fn bench1() {
   use std::time::Instant;
@@ -38,7 +37,6 @@ fn bench1() {
 
 #[test]
 fn compare_flatten_tst() {
-
   let result_points = data_flatten::result();
   let points = data_flatten::points();
 
@@ -47,10 +45,7 @@ fn compare_flatten_tst() {
     num_of_segments: 16,
     ..Default::default()
   };
-  assert_eq!(
-    Spline::from_flatten_points(&points, &opts),
-    result_points
-  );
+  assert_eq!(Spline::from_flatten_points(&points, &opts), result_points);
 
   let mut result = SplineResult::<f64>::default();
   SrcPoints::<f64>::new(&points).calc(&opts, &mut result);
