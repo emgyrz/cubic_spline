@@ -59,7 +59,6 @@ export default class Spline {
     return getCurvePoints(Float64Array.from(pts), {
       tension: settings.tension,
       num_of_segments: settings.numOfSegments,
-      disallow_x_stepping_back: settings.disallowXsteppingBack
     })
   }
 

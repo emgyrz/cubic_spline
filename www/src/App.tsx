@@ -12,10 +12,9 @@ import {
 import Spline from './Spline'
 
 interface IState {
-  points: PointType[];
-  tension: number;
-  numOfSegments: number;
-  disallowXsteppingBack: boolean;
+  points: PointType[]
+  tension: number
+  numOfSegments: number
 }
 
 
@@ -48,7 +47,6 @@ class App extends React.Component<{}, IState> {
     points: startPoints,
     tension: TENSION_DEFAULT,
     numOfSegments: NOS_DEFAULT,
-    disallowXsteppingBack: false,
   }
 
   getFlattenValidPoints(points: PointType[]): number[] {
@@ -95,7 +93,6 @@ class App extends React.Component<{}, IState> {
     return {
       tension: st.tension,
       numOfSegments: st.numOfSegments,
-      disallowXsteppingBack: st.disallowXsteppingBack,
     }
   }
 

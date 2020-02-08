@@ -1,6 +1,6 @@
 {
   "name": "cubic_spline_demo",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Demo for cubic_spline",
   "scripts": {
     "build": "webpack --config webpack.config.js -p",

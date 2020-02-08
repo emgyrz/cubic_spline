@@ -1,11 +1,6 @@
 /// Options for the spline
 ///
 pub struct SplineOpts {
-  /// If `true` checks that every x value of point is greater than previous
-  ///
-  /// default is `false`
-  pub disallow_x_stepping_back: bool,
-
   /// Tension
   ///
   /// default is `0.5_f64`
@@ -32,7 +27,6 @@ impl Default for SplineOpts {
   /// ```
   fn default() -> Self {
     SplineOpts {
-      disallow_x_stepping_back: false,
       tension: 0.5,
       num_of_segments: 16,
     }

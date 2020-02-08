@@ -5,7 +5,6 @@ export type ValidPointType = [number, number]
 export type SplineSettings = {
   tension: number,
   numOfSegments: number,
-  disallowXsteppingBack: boolean,
 }
 
 
@@ -17,10 +16,6 @@ export function isNum(n: any): n is number {
 }
 
 export function castNum(n: any, def?: number): number {
-  return isNum(n) ? n : ( isNum(def) ? def : 0 )
+  return isNum(n) ? n : (isNum(def) ? def : 0)
 }
 
-
-// export function filterInvalidPoints() {
-
-// }

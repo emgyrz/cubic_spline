@@ -5,7 +5,7 @@
 
 Interpolation methods for computation of cubic spline points within the range of a discrete set of known points.
 
-[Online documentation](https://docs.rs/cubic_spline/0.8.1/cubic_spline/)
+[Online documentation](https://docs.rs/cubic_spline/0.9.0/cubic_spline/)
 <br />
 [Demo](https://emgyrz.github.io/cubic_spline/)
 
@@ -100,7 +100,6 @@ const points = [10.0, 200.0, 256.0, 390.0, 512.0, 10.0, 778.0, 200.0]
 const curvePoints = getCurvePoints( points, {
   num_of_segments: NUM_OF_SEGMENTS, // *optional
   // tension: 0.5, // *optional
-  // disallow_x_stepping_back: false, // *optional
 } )
 
 ```
@@ -111,7 +110,6 @@ const curvePoints = getCurvePoints( points, {
 |--------------------------|:------:|:-------:|-----------------------------------------------------------------------|
 | tension                  | `f64`  |  `0.5`  | Tension                                                               |
 | num_of_segments          | `u32`  |  `16`   | Number of calculated points between known points                      |
-| disallow_x_stepping_back | `bool` | `false` | If `true` checks that every x value of point is greater than previous |
 
 ```rust
 use cubic_spline::{SplineOpts};

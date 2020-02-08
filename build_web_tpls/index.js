@@ -5,7 +5,6 @@ export function getCurvePoints(pts, opts = {}) {
     pts,
     opts.tension,
     opts.num_of_segments,
-    opts.disallow_x_stepping_back,
   )
 }
 

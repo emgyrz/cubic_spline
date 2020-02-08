@@ -33,19 +33,15 @@ export default class Points extends React.Component<IProps> {
       case 'tension': {
         const val = parseFloat(value)
         if (isNum(val)) {
-          this.emitChange( { [ name ]: val })
+          this.emitChange({ [name]: val })
         }
         break
       }
       case 'numOfSegments': {
         const val = parseInt(value)
         if (isNum(val)) {
-          this.emitChange( { [ name ]: val })
+          this.emitChange({ [name]: val })
         }
-        break
-      }
-      case 'disallowXsteppingBack': {
-        this.emitChange( { [ name ]: trg.checked })
         break
       }
       default:
@@ -61,60 +57,47 @@ export default class Points extends React.Component<IProps> {
 
     return (
       <div className="settings column is-half">
-      <h2 className="title">Settings</h2>
+        <h2 className="title">Settings</h2>
 
-      <div className="field range is-horizontal">
-        <div className="inpWrp">
-          <label className="label">tension:</label>
-          <div className="control">
-            <input
-              name="tension"
-              className="slider has-output is-fullwidth"
-              min="-3"
-              max="3"
-              value={settings.tension}
-              step="0.1"
-              type="range"
-              onChange={this.handleChange}
-            />
+        <div className="field range is-horizontal">
+          <div className="inpWrp">
+            <label className="label">tension:</label>
+            <div className="control">
+              <input
+                name="tension"
+                className="slider has-output is-fullwidth"
+                min="-3"
+                max="3"
+                value={settings.tension}
+                step="0.1"
+                type="range"
+                onChange={this.handleChange}
+              />
+            </div>
           </div>
+          <b className="val">{settings.tension.toFixed(1)}</b>
         </div>
-        <b className="val">{settings.tension.toFixed(1)}</b>
-      </div>
 
-      <div className="field range is-horizontal">
-        <div className="inpWrp">
-          <label className="label">num_of_segments:</label>
-          <div className="control">
-            <input
-              name="numOfSegments"
-              className="slider has-output is-fullwidth"
-              min="1"
-              max="50"
-              value={settings.numOfSegments}
-              step="1"
-              type="range"
-              onChange={this.handleChange}
-            />
+        <div className="field range is-horizontal">
+          <div className="inpWrp">
+            <label className="label">num_of_segments:</label>
+            <div className="control">
+              <input
+                name="numOfSegments"
+                className="slider has-output is-fullwidth"
+                min="1"
+                max="50"
+                value={settings.numOfSegments}
+                step="1"
+                type="range"
+                onChange={this.handleChange}
+              />
+            </div>
           </div>
+          <b className="val">{settings.numOfSegments}</b>
         </div>
-        <b className="val">{settings.numOfSegments}</b>
-      </div>
 
-      <div className="field is-horizontal">
-        <label className="label">disallow_x_stepping_back:</label>
-        <div className="control">
-          <label className="checkbox">
-            <input
-              name="disallowXsteppingBack"
-              type="checkbox"
-              checked={settings.disallowXsteppingBack}
-              onChange={this.handleChange}
-            />
-          </label>
-        </div>
       </div>
-    </div>
 
     )
   }

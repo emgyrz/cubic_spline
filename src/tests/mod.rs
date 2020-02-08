@@ -12,7 +12,6 @@ fn bench1() {
   let opts = SplineOpts {
     tension: 0.5,
     num_of_segments: 16,
-    ..Default::default()
   };
 
   let mut v = Vec::new();
@@ -43,7 +42,6 @@ fn compare_flatten_tst() {
   let opts = SplineOpts {
     tension: 0.5,
     num_of_segments: 16,
-    ..Default::default()
   };
   assert_eq!(Spline::from_flatten_points(&points, &opts), result_points);
 
@@ -60,7 +58,6 @@ fn compare_tupoles_tst() {
   let opts = SplineOpts {
     tension: 0.5,
     num_of_segments: 16,
-    ..Default::default()
   };
 
   let spline_points = Spline::from_tuples(&points, &opts);
