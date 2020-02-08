@@ -10,7 +10,7 @@ import {
 } from '../glob'
 
 interface IProps {
-  onChange: (SplineSettings) => void,
+  onChange: (s: SplineSettings) => void,
   settings: SplineSettings
 }
 

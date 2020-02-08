@@ -1,6 +1,4 @@
 import { getCurvePoints } from "../pkg/index"
-
-// import drawSpline from './spline'
 import { ValidPointType, SplineSettings } from './glob'
 
 type GetCanvasElFunc = () => null | HTMLCanvasElement
@@ -65,18 +63,12 @@ export default class Spline {
     })
   }
 
-  private applyCtxAttrs(st) {
-    const ctx = this.ctx!
-    for (const key in st) {
-      ctx[key] = st[key]
-    }
-  }
-
   private drawLine(curvePoints: Float64Array) {
     const ctx = this.ctx!
 
     ctx.beginPath()
-    this.applyCtxAttrs({ lineWidth: 3, strokeStyle: COLORS.stroke, })
+    ctx.lineWidth = 3
+    ctx.strokeStyle = COLORS.stroke
 
     ctx.moveTo(curvePoints[0], curvePoints[1])
     const length = curvePoints.length - 1
@@ -114,11 +106,9 @@ export default class Spline {
     gradient.addColorStop(0, COLORS.gradient[0])
     gradient.addColorStop(1, COLORS.gradient[1])
 
-    this.applyCtxAttrs({
-      strokeStyle: 'transparent',
-      lineWidth: 0,
-      fillStyle: gradient,
-    })
+    ctx.strokeStyle = 'transparent'
+    ctx.lineWidth = 0
+    ctx.fillStyle = gradient
 
     ctx.fill()
     ctx.stroke()

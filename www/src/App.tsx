@@ -37,7 +37,7 @@ class App extends React.Component<{}, IState> {
   spline: Spline
   canvEl = React.createRef<HTMLCanvasElement>()
 
-  constructor (props) {
+  constructor (props: {}) {
     super(props)
     this.spline = new Spline({
       getCanvasEl: () => this.canvEl.current

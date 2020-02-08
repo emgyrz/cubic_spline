@@ -22,14 +22,14 @@ class Inp extends React.Component<IProps, {}> {
   }
 
 
-  handleChange = ( ev ) => {
-    let val = ev.currentTarget.value
-    val = val === '' ? null : parseFloat(val)
-    val = Number.isNaN(val) ? null : val
+  handleChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
+    const value = ev.currentTarget.value
+    let val: NullNum = parseFloat(value)
+    val = isNum(val) ? null : val
     this.props.onInpChange(val)
   }
 
-  handleWheel = (ev) => {
+  handleWheel = (ev: WheelEvent) => {
     ev.stopPropagation()
     ev.preventDefault()
     const { min, step, onInpChange } = this.props
