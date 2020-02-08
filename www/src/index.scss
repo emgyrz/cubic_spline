@@ -126,10 +126,22 @@ canvas {
     line-height: 3;
     padding: 0 10px;
 
-    > .label {
+    &.range {
+      .val {
+        margin-left: auto;
+        display: inline-block;
+      }
+    }
+
+    .inpWrp {
+      display: flex;
+      align-items: center;
+      width: calc(100% - 50px);
+    }
+
+    .label {
       font-weight: normal;
       margin-bottom: 0;
-      margin-right: 15px;
       // display: inline-block;
     }
     // &:not(:last-child):after {
@@ -148,6 +160,11 @@ canvas {
     .control {
       display: flex;
       align-items: center;
+      margin-left: 10px;
+      width: 100%;
+      input[type=range] {
+        width: 100%;
+      }
     }
 
     .checkbox {

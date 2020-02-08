@@ -2,9 +2,15 @@
   "compilerOptions": {
     "outDir": "./dist/",
     "noImplicitAny": false,
+    "strictNullChecks": true,
     "module": "esNext",
     "target": "es5",
     "jsx": "react",
-    "allowJs": true
+    "allowJs": true,
+    "locale": "ru",
+    "lib": [
+      "dom",
+      "esnext"
+    ]
   }
 }

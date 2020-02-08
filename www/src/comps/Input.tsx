@@ -1,33 +1,28 @@
 import * as React from 'react';
-
-type NullNum = number | null
+import { isNum, castNum, NullNum } from '../glob'
 
 interface IProps extends React.HTMLAttributes<HTMLInputElement> {
-  value: NullNum;
-  onInpChange: (val: NullNum) => void;
-  step?: number;
-  min?: NullNum;
+  value: NullNum
+  onInpChange: (val: NullNum) => void
+  step?: number
+  min?: number
 }
 
 class Inp extends React.Component<IProps, {}> {
-  static defaultProps = {
-    min: null,
-    step: 1
-  }
 
-  inp = React.createRef<HTMLInputElement>()
+  inp: React.RefObject<HTMLInputElement> = React.createRef<HTMLInputElement>()
 
 
   componentDidMount() {
-    this.inp.current.addEventListener("wheel", this.handleWheel)
+    this.inp?.current?.addEventListener("wheel", this.handleWheel)
   }
 
   componentWillUnmount() {
-    this.inp.current.removeEventListener("wheel", this.handleWheel)
+    this.inp?.current?.removeEventListener("wheel", this.handleWheel)
   }
 
 
-  handleChange = (ev) => {
+  handleChange = ( ev ) => {
     let val = ev.currentTarget.value
     val = val === '' ? null : parseFloat(val)
     val = Number.isNaN(val) ? null : val
@@ -37,19 +32,21 @@ class Inp extends React.Component<IProps, {}> {
   handleWheel = (ev) => {
     ev.stopPropagation()
     ev.preventDefault()
-    const { value, min, step, onInpChange } = this.props
-    let val = this.props.value
-    if (val === null) return
-    if (min !== null) {
-      val = val < min ? val : min
+    const { min, step, onInpChange } = this.props
+    const { value } = this.props
+    if (!isNum(value)) return
+    let val = value
+    if (isNum(min)) {
+      val = val < 3 ? val : min
     }
-    val = ev.deltaY < 0 ? val + step : val - step
+    const st = castNum(step, 1)
+    val = ev.deltaY < 0 ? val + st : val - st
     onInpChange(val)
   }
 
   render() {
     const { value, onInpChange, ...otherProps } = this.props
-    let val = value === null ? '' : value
+    let val = value?.toString() || ''
     return (
       <input
         {...otherProps}

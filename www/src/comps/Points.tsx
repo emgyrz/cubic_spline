@@ -1,7 +1,6 @@
 import * as React from 'react';
 import Point from './Point'
-
-type NullNum = number | null
+import { NullNum } from '../glob'
 
 interface IProps {
   points: Array<[NullNum, NullNum]>;
@@ -47,6 +46,7 @@ class Points extends React.Component<IProps> {
     return (
       <div className="points column is-half">
         <h2 className="title">Points</h2>
+        <h6 className="subtitle is-7">Scroll above input to change value</h6>
         <div className="field is-horizontal has-addons">
           <div className="field-label is-normal">
           </div>

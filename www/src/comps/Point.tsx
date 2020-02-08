@@ -1,7 +1,6 @@
 import * as React from 'react';
 import Inp from './Input'
-
-type NullNum = number | null
+import { NullNum } from '../glob'
 
 interface IProps {
   x: NullNum

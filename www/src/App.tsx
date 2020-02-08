@@ -1,10 +1,16 @@
 import * as React from 'react';
 import Points from './comps/Points'
-import Inp from './comps/Input'
-import drawSpline from './spline'
+import Settings from './comps/Settings'
+import {
+  isNum,
+  NullNum,
+  PointType,
+  SplineSettings,
+  TENSION_DEFAULT,
+  NOS_DEFAULT,
+} from './glob'
+import Spline from './Spline'
 
-type NullNum = number | null
-type PointType = [NullNum, NullNum]
 interface IState {
   points: PointType[];
   tension: number;
@@ -12,8 +18,6 @@ interface IState {
   disallowXsteppingBack: boolean;
 }
 
-const TENSION_DEFAULT = 0.5
-const NOS_DEFAULT = 16
 
 const startPoints: PointType[] = [
   [0, 2],
@@ -29,49 +33,47 @@ const startPoints: PointType[] = [
 ]
 
 class App extends React.Component<{}, IState> {
+
+  spline: Spline
+  canvEl = React.createRef<HTMLCanvasElement>()
+
+  constructor (props) {
+    super(props)
+    this.spline = new Spline({
+      getCanvasEl: () => this.canvEl.current
+    })
+  }
+
   state: IState = {
     points: startPoints,
-    tension: 0.5,
-    numOfSegments: 16,
+    tension: TENSION_DEFAULT,
+    numOfSegments: NOS_DEFAULT,
     disallowXsteppingBack: false,
   }
 
-  canv = React.createRef<HTMLCanvasElement>()
-  ctx: CanvasRenderingContext2D | null = null
-
-  preparePoints(points: PointType[]) {
-    const canv = this.canv.current
-    if (canv === null) return
+  getFlattenValidPoints(points: PointType[]): number[] {
+    const canv = this.canvEl.current
+    if (canv === null) return []
     const h = canv.height
 
-    const validPoints: number[] = []
+    const validFlattenPoints: number[] = []
 
-    points.forEach(([x, y]: PointType) => {
-      if (x !== null && y !== null) {
-        validPoints.push(x, h - y)
-      }
-    })
+    points
+      .forEach(([x, y]: PointType) => {
+        if (isNum(x) && isNum(y)) {
+          validFlattenPoints.push(x, h - y)
+        }
+      })
 
-    return validPoints
+    return validFlattenPoints
   }
 
   handlePointsChange = (pts: Array<[NullNum, NullNum]>) => {
     this.setState({ points: pts })
   }
 
-
-  handleTensionChange = ( tension: NullNum ) => {
-    this.setState( { tension })
-  }
-
-
-  handleNumOfSegmentsChange = ( num: NullNum ) => {
-    if ( num !== null && num < 1 ) return
-    this.setState( { numOfSegments: num })
-  }
-
-  handleDisallowXsteppingBackChange = ( ev ) => {
-    this.setState({disallowXsteppingBack: ev.currentTarget.checked })
+  handleSettingsChange = (newSettings: SplineSettings) => {
+    this.setState({ ...newSettings })
   }
 
   componentDidUpdate() {
@@ -82,46 +84,23 @@ class App extends React.Component<{}, IState> {
     this.redraw()
   }
 
-  getCtx(): CanvasRenderingContext2D {
-    if (this.ctx !== null) return this.ctx
-    const canv = this.canv.current
-
-    if (canv !== null) {
-      const ctx = canv.getContext('2d')
-      if (ctx !== null) {
-        this.ctx = ctx
-        return ctx
-      }
-    }
-
-    return new CanvasRenderingContext2D()
-  }
-
-  clearCanv() {
-    const canv = this.canv.current
-    if (canv === null) return
-    const ctx = this.getCtx()
-    ctx.clearRect(0, 0, canv.width, canv.height)
-  }
 
   redraw() {
-    const pts = this.preparePoints(this.state.points)
+    const pts = this.getFlattenValidPoints(this.state.points)
+    this.spline.redraw(pts, this.collectSettings())
+  }
 
-    this.clearCanv()
-    const ctx = this.getCtx()
-    const { tension, numOfSegments, disallowXsteppingBack } = this.state
-    drawSpline(ctx, pts, {
-      lineWidth: 3,
-      strokeStyle: '#7B1FA2',
-      tension: tension === null ? TENSION_DEFAULT : tension,
-      numOfSegments: numOfSegments === null ? NOS_DEFAULT : numOfSegments,
-      disallowXsteppingBack,
-      // fillStyle: "#E64A19"
-    }, true)
-
+  collectSettings(): SplineSettings {
+    const st = this.state
+    return {
+      tension: st.tension,
+      numOfSegments: st.numOfSegments,
+      disallowXsteppingBack: st.disallowXsteppingBack,
+    }
   }
 
   render() {
+
     return (
       <div className="App">
         <h1 className="title is-1">Demo of cubic_spline</h1>
@@ -131,70 +110,14 @@ class App extends React.Component<{}, IState> {
         </div>
 
         <div className="canvasWrp">
-          <canvas ref={this.canv} width="900" height="400">
+          <canvas ref={this.canvEl} width="900" height="400">
           </canvas>
         </div>
 
         <div className="controls columns section">
 
           <Points points={this.state.points} onChange={this.handlePointsChange} />
-
-          <div className="settings column is-half">
-            <h2 className="title">Settings</h2>
-
-            {/* <div className="field">
-              <label className="label">Color</label>
-              <div className="control">
-                <input
-                  className="input is-primary"
-                  type="text"
-                  placeholder="Color"
-                  disabled
-                  value="*"
-                />
-              </div>
-            </div> */}
-
-            <div className="field is-horizontal">
-              <label className="label">tension:</label>
-              <div className="control">
-                <Inp
-                  className="input is-primary"
-                  step={0.1}
-                  placeholder="Tension"
-                  value={this.state.tension}
-                  onInpChange={this.handleTensionChange}
-                />
-              </div>
-            </div>
-
-            <div className="field is-horizontal">
-              <label className="label">num_of_segments:</label>
-              <div className="control">
-                <Inp
-                  className="input is-primary"
-                  value={this.state.numOfSegments}
-                  onInpChange={this.handleNumOfSegmentsChange}
-                />
-              </div>
-            </div>
-
-            <div className="field is-horizontal">
-              <label className="label">disallow_x_stepping_back:</label>
-              <div className="control">
-                <label className="checkbox">
-                  <input
-                    type="checkbox"
-                    checked={this.state.disallowXsteppingBack}
-                    onChange={this.handleDisallowXsteppingBackChange}
-                  />
-                </label>
-              </div>
-            </div>
-
-
-
-          </div>
+          <Settings settings={this.collectSettings()} onChange={this.handleSettingsChange} />
 
         </div>
       </div>
