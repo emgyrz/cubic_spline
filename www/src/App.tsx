@@ -103,6 +103,7 @@ class App extends React.Component<{}, IState> {
         <h1 className="title is-1">Demo of cubic_spline</h1>
         <div className="links">
           <a href="https://crates.io/crates/cubic_spline/"><img src="https://img.shields.io/crates/v/cubic_spline.svg" /></a>
+          <a href="https://www.npmjs.com/package/cubic-spline-rs"><img src="https://img.shields.io/npm/v/cubic-spline-rs.svg" /></a>
           <a href="https://github.com/emgyrz/cubic_spline">Repository</a>
         </div>
 

@@ -1,7 +1,7 @@
 # cubic_spline
 
 [![Crates.io](https://img.shields.io/crates/v/cubic_spline.svg)](https://crates.io/crates/cubic_spline/)
-[![npm](https://img.shields.io/npm/v/cubic-spline-rs.svg?style=flat)](https://www.npmjs.com/package/cubic-spline-rs)
+[![npm](https://img.shields.io/npm/v/cubic-spline-rs.svg)](https://www.npmjs.com/package/cubic-spline-rs)
 
 Interpolation methods for computation of cubic spline points within the range of a discrete set of known points.
 
@@ -103,6 +103,27 @@ const curvePoints = getCurvePoints( points, {
 } )
 
 ```
+
+If you want to draw result points to canvas code like this
+```js
+const ctx = getMyCanvas2DContext()
+
+ctx.beginPath()
+ctx.lineWidth = 3
+ctx.strokeStyle = COLORS.stroke
+
+ctx.moveTo(curvePoints[0], curvePoints[1])
+const length = curvePoints.length - 1
+for (let i = 2; i < length; i += 2) {
+  ctx.lineTo(curvePoints[i], curvePoints[i + 1])
+}
+
+ctx.stroke()
+ctx.closePath()
+```
+See example [here](./www/src/Spline.ts).
+
+
 
 
 ### Options
