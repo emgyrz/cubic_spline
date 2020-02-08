@@ -1,5 +1,5 @@
-import { getCurvePoints } from "../pkg/index"
-import { ValidPointType, SplineSettings } from './glob'
+import { getCurvePoints, OptsType } from "../pkg/index"
+import { ValidPointType, SplineSettings, isNum } from './glob'
 
 type GetCanvasElFunc = () => null | HTMLCanvasElement
 type ContstructorArgs = {
@@ -12,7 +12,8 @@ const COLORS = {
     'rgba(255,132,82,0.3)',
     'rgba(255,132,82,0.1)'
   ],
-  stroke: 'rgba(255,132,82,1)'
+  stroke: 'rgba(255,132,82,1)',
+  point: 'rgba(130,89,175,1)'
 }
 
 
@@ -39,10 +40,15 @@ export default class Spline {
     const curvePoints = this.getCurvePoints(pts, settings)
     this.drawLine(curvePoints)
     this.drawShadow(curvePoints)
-    this.drawPoints(pts)
 
-
+    if (
+      !isNum(settings.invertXwithWidth) &&
+      isNum(settings.invertYwithHeight)
+    ) {
+      this.drawPoints(pts)
+    }
   }
+
 
   public clear() {
     const { ctx, el } = this
@@ -56,11 +62,19 @@ export default class Spline {
   }
 
   private getCurvePoints(pts: number[], settings: SplineSettings): Float64Array {
-    return getCurvePoints(Float64Array.from(pts), {
+    const opts: OptsType = {
       tension: settings.tension,
       num_of_segments: settings.numOfSegments,
-    })
+    }
+    if (isNum(settings.invertXwithWidth)) {
+      opts.invert_x_with_width = settings.invertXwithWidth
+    }
+    if (isNum(settings.invertYwithHeight)) {
+      opts.invert_y_with_height = settings.invertYwithHeight
+    }
+    return getCurvePoints(Float64Array.from(pts), opts)
   }
+
 
   private drawLine(curvePoints: Float64Array) {
     const ctx = this.ctx!
@@ -78,6 +92,7 @@ export default class Spline {
     ctx.stroke()
     ctx.closePath()
   }
+
 
   private drawShadow(pts: Float64Array) {
     const ctx = this.ctx!
@@ -115,14 +130,24 @@ export default class Spline {
   }
 
 
+  private invertPtsY(pts: number[], h: number): number[] {
+    return pts.map((xOrY: number, ind: number): number => {
+      if (ind % 2 !== 0) {
+        const y = xOrY
+        return h - y
+      }
+      return xOrY
+    })
+  }
+
   private drawPoints(pts: number[]) {
     const ctx = this.ctx!
-
-    ctx.strokeStyle = "#8259af";
+    const inverted = this.invertPtsY(pts, ctx.canvas.clientHeight)
+    ctx.strokeStyle = COLORS.point;
     ctx.lineWidth = 2;
-    for (let i = 0; i < pts.length - 1; i += 2) {
+    for (let i = 0; i < inverted.length - 1; i += 2) {
       ctx.beginPath()
-      ctx.arc(pts[i], pts[i + 1], 4, 0, 2 * Math.PI);
+      ctx.arc(inverted[i], inverted[i + 1], 4, 0, 2 * Math.PI);
       ctx.stroke();
     }
 

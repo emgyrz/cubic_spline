@@ -2,11 +2,9 @@ import * as React from 'react';
 
 import {
   isNum,
-  castNum,
-  NullNum,
-  PointType,
   SplineSettings,
-  TENSION_DEFAULT,
+  CANVAS_W,
+  CANVAS_H,
 } from '../glob'
 
 interface IProps {
@@ -42,6 +40,14 @@ export default class Points extends React.Component<IProps> {
         if (isNum(val)) {
           this.emitChange({ [name]: val })
         }
+        break
+      }
+      case 'invertXwithWidth': {
+        this.emitChange({ [name]: trg.checked ? CANVAS_W : null })
+        break
+      }
+      case 'invertYwithHeight': {
+        this.emitChange({ [name]: trg.checked ? CANVAS_H : null })
         break
       }
       default:
@@ -95,6 +101,34 @@ export default class Points extends React.Component<IProps> {
             </div>
           </div>
           <b className="val">{settings.numOfSegments}</b>
+        </div>
+
+        <div className="field checkbox is-horizontal">
+          <label className="label">invert_x_with_width ({CANVAS_W}):</label>
+          <div className="control">
+            <label className="checkbox">
+              <input
+                name="invertXwithWidth"
+                type="checkbox"
+                checked={isNum(settings.invertXwithWidth)}
+                onChange={this.handleChange}
+              />
+            </label>
+          </div>
+        </div>
+
+        <div className="field checkbox is-horizontal">
+          <label className="label">invert_y_with_height ({CANVAS_H}):</label>
+          <div className="control">
+            <label className="checkbox">
+              <input
+                name="invertYwithHeight"
+                type="checkbox"
+                checked={isNum(settings.invertYwithHeight)}
+                onChange={this.handleChange}
+              />
+            </label>
+          </div>
         </div>
 
       </div>

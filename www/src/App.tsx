@@ -8,15 +8,15 @@ import {
   SplineSettings,
   TENSION_DEFAULT,
   NOS_DEFAULT,
+  CANVAS_W,
+  CANVAS_H,
 } from './glob'
 import Spline from './Spline'
 
 interface IState {
   points: PointType[]
-  tension: number
-  numOfSegments: number
+  settings: SplineSettings
 }
-
 
 const startPoints: PointType[] = [
   [0, 2],
@@ -45,21 +45,21 @@ class App extends React.Component<{}, IState> {
 
   state: IState = {
     points: startPoints,
-    tension: TENSION_DEFAULT,
-    numOfSegments: NOS_DEFAULT,
+    settings: {
+      tension: TENSION_DEFAULT,
+      numOfSegments: NOS_DEFAULT,
+      invertYwithHeight: CANVAS_H,
+      invertXwithWidth: null,
+    }
   }
 
   getFlattenValidPoints(points: PointType[]): number[] {
-    const canv = this.canvEl.current
-    if (canv === null) return []
-    const h = canv.height
-
     const validFlattenPoints: number[] = []
 
     points
       .forEach(([x, y]: PointType) => {
         if (isNum(x) && isNum(y)) {
-          validFlattenPoints.push(x, h - y)
+          validFlattenPoints.push(x, y)
         }
       })
 
@@ -71,7 +71,12 @@ class App extends React.Component<{}, IState> {
   }
 
   handleSettingsChange = (newSettings: SplineSettings) => {
-    this.setState({ ...newSettings })
+    this.setState({
+      settings: {
+        ...this.state.settings,
+        ...newSettings
+      }
+    })
   }
 
   componentDidUpdate() {
@@ -85,16 +90,9 @@ class App extends React.Component<{}, IState> {
 
   redraw() {
     const pts = this.getFlattenValidPoints(this.state.points)
-    this.spline.redraw(pts, this.collectSettings())
+    this.spline.redraw(pts, this.state.settings)
   }
 
-  collectSettings(): SplineSettings {
-    const st = this.state
-    return {
-      tension: st.tension,
-      numOfSegments: st.numOfSegments,
-    }
-  }
 
   render() {
 
@@ -108,14 +106,14 @@ class App extends React.Component<{}, IState> {
         </div>
 
         <div className="canvasWrp">
-          <canvas ref={this.canvEl} width="900" height="400">
+          <canvas ref={this.canvEl} width={CANVAS_W} height={CANVAS_H}>
           </canvas>
         </div>
 
         <div className="controls columns section">
 
           <Points points={this.state.points} onChange={this.handlePointsChange} />
-          <Settings settings={this.collectSettings()} onChange={this.handleSettingsChange} />
+          <Settings settings={this.state.settings} onChange={this.handleSettingsChange} />
 
         </div>
       </div>

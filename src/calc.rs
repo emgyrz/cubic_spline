@@ -15,7 +15,15 @@ pub trait CalcPoints {
     let SplineOpts {
       tension,
       num_of_segments,
+      invert_y_with_height,
+      invert_x_with_width,
     } = *opts;
+
+    let need_invert_y = invert_y_with_height.is_some();
+    let canvas_height = invert_y_with_height.unwrap_or_default() as f64;
+
+    let need_invert_x = invert_x_with_width.is_some();
+    let canvas_width = invert_x_with_width.unwrap_or_default() as f64;
 
     let num_of_segments_f64 = f64::from(num_of_segments);
 
@@ -44,8 +52,14 @@ pub trait CalcPoints {
         let c3 = st_pow3 - 2.0 * st_pow2 + st;
         let c4 = st_pow3 - st_pow2;
 
-        let x = c1 * current.0 + c2 * next.0 + c3 * t1x + c4 * t2x;
-        let y = c1 * current.1 + c2 * next.1 + c3 * t1y + c4 * t2y;
+        let mut x = c1 * current.0 + c2 * next.0 + c3 * t1x + c4 * t2x;
+        let mut y = c1 * current.1 + c2 * next.1 + c3 * t1y + c4 * t2y;
+        if need_invert_x {
+          x = canvas_width - x;
+        }
+        if need_invert_y {
+          y = canvas_height - y;
+        }
 
         result.push_spline_point(x, y);
       }

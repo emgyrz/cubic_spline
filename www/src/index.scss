@@ -1,12 +1,4 @@
-// $label-weight: normal;
-// $body-background-color: #282c34;
 @import "bulma/bulma.sass";
-// @import "bulma/sass/utilities/_all.sass";
-// @import "bulma/sass/base/_all.sass";
-// @import "bulma/sass/elements/form.sass";
-// @import "bulma/sass/grid/_all.sass";
-// @import "bulma/sass/layout/_all.sass";
-// @import "bulma/sass/elements/other.sass";
 
 body {
   margin: 0;
@@ -31,7 +23,6 @@ code {
   width: 900px;
   padding: 40px 0;
   margin: 0 auto;
-  // background: #777;
 
   h1.title {
     margin-bottom: 0;
@@ -125,6 +116,12 @@ canvas {
       .val {
         margin-left: auto;
         display: inline-block;
+      }
+    }
+
+    &.checkbox {
+      .control {
+        max-width: 30px;
       }
     }
 

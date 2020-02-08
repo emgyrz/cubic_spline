@@ -5,21 +5,20 @@
 
 Interpolation methods for computation of cubic spline points within the range of a discrete set of known points.
 
-[Online documentation](https://docs.rs/cubic_spline/0.9.0/cubic_spline/)
+[Online documentation](https://docs.rs/cubic_spline/0.9.1/cubic_spline/)
 <br />
 [Demo](https://emgyrz.github.io/cubic_spline/)
 
 
 #### Example
 ```rust
-use cubic_spline::{CalcPoints, SplineOpts, SplineResult, SrcPoints};
+use cubic_spline::{CalcPoints, SplineOptsBuilder, SplineResult, SrcPoints};
 
 let points = vec![(10.0, 200.0), (256.0, 390.0), (512.0, 10.0), (778.0, 200.0)];
 
-let opts = SplineOpts {
-  num_of_segments: 16,
-  ..Default::default()
-};
+let opts = SplineOptsBuilder::new()
+  .num_of_segments(16)
+  .take();
 
 let pts: SrcPoints<(f64, f64)> = SrcPoints::new(&points);
 let mut result = SplineResult::<(f64, f64)>::new();
@@ -104,13 +103,13 @@ const curvePoints = getCurvePoints( points, {
 
 ```
 
-If you want to draw result points to canvas code like this
+If you want to draw result points to canvas - code like this:
 ```js
 const ctx = getMyCanvas2DContext()
 
 ctx.beginPath()
 ctx.lineWidth = 3
-ctx.strokeStyle = COLORS.stroke
+ctx.strokeStyle = '#ffcc00'
 
 ctx.moveTo(curvePoints[0], curvePoints[1])
 const length = curvePoints.length - 1
@@ -127,17 +126,28 @@ See example [here](./www/src/Spline.ts).
 
 
 ### Options
-| Name                     |  Type  | Default | Description                                                           |
-|--------------------------|:------:|:-------:|-----------------------------------------------------------------------|
-| tension                  | `f64`  |  `0.5`  | Tension                                                               |
-| num_of_segments          | `u32`  |  `16`   | Number of calculated points between known points                      |
+| Name                 | Type  | Default | Description                                      |
+| -------------------- | :---: | :-----: | ------------------------------------------------ |
+| tension              | `f64` | `0.5`   | Tension                                          |
+| num_of_segments      | `u32` | `16`    | Number of calculated points between known points |
+| invert_x_with_width  | `Option<u32>` | `None`   | If set to `Some(canvas_width)` generated points will be inverted by X-axis.                                          |
+| invert_y_with_height | `Option<u32>` | `None`   | If set to `Some(canvas_height)` generated points will be inverted by Y-axis.                                          |
+
 
 ```rust
-use cubic_spline::{SplineOpts};
+use cubic_spline::{SplineOpts, SplineOptsBuilder};
 let opts = SplineOpts {
   tension: 0.6,
   ..Default.default()
-}
+};
+
+// or use builder
+
+let opts2 = SplineOptsBuilder::new()
+  .num_of_segments(54)
+  .invert_y_with_height(1080)
+  .take();
+
 ```
 
 

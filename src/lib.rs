@@ -95,7 +95,7 @@ mod tests;
 use wasm_bindgen::prelude::*;
 
 pub use calc::CalcPoints;
-pub use opts::SplineOpts;
+pub use opts::{SplineOpts, SplineOptsBuilder};
 pub use points::{GetPoint, SrcPoints};
 pub use result::{PushPoint, SplineResult};
 
@@ -189,15 +189,23 @@ pub fn getCurvePoints(
   pts: Vec<f64>,
   tension: Option<f64>,
   num_of_segments: Option<u32>,
+  invert_x_with_width: Option<u32>,
+  invert_y_with_height: Option<u32>,
 ) -> Vec<f64> {
-  let mut opts: SplineOpts = Default::default();
+  let mut b = SplineOptsBuilder::new();
 
-  if let Some(tension) = tension {
-    opts.tension = tension;
+  if let Some(t) = tension {
+    b = b.tension(t);
   }
-  if let Some(num_of_segments) = num_of_segments {
-    opts.num_of_segments = num_of_segments;
+  if let Some(n) = num_of_segments {
+    b = b.num_of_segments(n);
+  }
+  if let Some(w) = invert_x_with_width {
+    b = b.invert_x_with_width(w);
+  }
+  if let Some(h) = invert_y_with_height {
+    b = b.invert_y_with_height(h);
   }
 
-  Spline::from_flatten_points(&pts, &opts)
+  Spline::from_flatten_points(&pts, &b.take())
 }
