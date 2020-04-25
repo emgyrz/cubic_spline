@@ -5,6 +5,7 @@ Cargo.lock
 /.vscode
 /wasm
 /tests
+.idea
 
 /www/node_modules
 /www/dist
