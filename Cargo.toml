@@ -20,4 +20,4 @@ wasm-bindgen = "0.2.58"
 [lib]
 
 #[cfg(target_arch = "wasm32")]
-crate-type = ["cdylib"]
+crate-type = ["cdylib", "rlib"]
