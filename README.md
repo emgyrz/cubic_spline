@@ -5,7 +5,7 @@
 
 Interpolation methods for computation of cubic spline points within the range of a discrete set of known points.
 
-[Online documentation](https://docs.rs/cubic_spline/0.9.1/cubic_spline/)
+[Online documentation](https://docs.rs/cubic_spline/0.9.2/cubic_spline/)
 <br />
 [Demo](https://emgyrz.github.io/cubic_spline/)
 
