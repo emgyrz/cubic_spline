@@ -55,9 +55,9 @@ struct MyPoint {
 }
 
 struct MyResult<T>(T);
-struct MySrcPoint<T>(T);
+struct MySrcPoints<T>(T);
 
-impl<'a> GetPoint for MySrcPoint<SrcPoints<'a, MyPoint>> {
+impl<'a> GetPoint for MySrcPoints<SrcPoints<'a, MyPoint>> {
   fn get(&self, index: usize) -> Option<(f64, f64)> {
     self.0.pts().get(index).and_then(|p| {
       Some((f64::from(p.left), f64::from(p.top)))
@@ -75,11 +75,11 @@ impl PushPoint for MyResult<SplineResult<MyPoint>> {
   }
 }
 
-impl<'a> CalcPoints for MySrcPoint<SrcPoints<'a, MyPoint>> {}
+impl<'a> CalcPoints for MySrcPoints<SrcPoints<'a, MyPoint>> {}
 
 
 let points: Vec<MyPoint> = vec![];
-let pts = MySrcPoint(SrcPoints::new(&points));
+let pts = MySrcPoints(SrcPoints::new(&points));
 let mut result = MyResult(SplineResult::default());
 pts.calc(&SplineOpts::default(), &mut result);
 
