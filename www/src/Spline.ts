@@ -72,6 +72,12 @@ export default class Spline {
     if (isNum(settings.invertYwithHeight)) {
       opts.invert_y_with_height = settings.invertYwithHeight
     }
+    if (Array.isArray(settings.hiddenPointAtStart)) {
+      opts.hidden_point_at_start = settings.hiddenPointAtStart
+    }
+    if (Array.isArray(settings.hiddenPointAtEnd)) {
+      opts.hidden_point_at_end = settings.hiddenPointAtEnd
+    }
     return getCurvePoints(Float64Array.from(pts), opts)
   }
 

@@ -17,7 +17,7 @@ impl<'a, T> SrcPoints<'a, T> {
     SrcPoints { pts }
   }
 
-  /// Returns referense of inner slice
+  /// Returns reference of inner slice
   pub fn pts(&self) -> &'a [T] {
     self.pts
   }
@@ -57,17 +57,27 @@ pub trait GetPoint {
   fn last(&self) -> Option<(f64, f64)> {
     self.get(self.len() - 1)
   }
-  fn points_to_calc(&self, index: usize) -> Option<PointsToCalc<f64>> {
+  fn points_to_calc(
+    &self,
+    index: usize,
+    hidden_point_at_start: &Option<(f64, f64)>,
+    hidden_point_at_end: &Option<(f64, f64)>,
+  ) -> Option<PointsToCalc<f64>> {
     let current = self.get(index)?;
     let next = self.get(index + 1)?;
 
     let prev = if index == 0 {
-      current
+      hidden_point_at_start.unwrap_or(current)
     } else {
-      self.get(index - 1).unwrap_or_else(|| current)
+      self.get(index - 1).unwrap_or(current)
     };
 
-    let next2 = self.get(index + 2).unwrap_or_else(|| next);
+    let next2 = self.get(index + 2).unwrap_or_else(|| {
+      if let Some(p) = hidden_point_at_end {
+        return *p;
+      }
+      next
+    });
 
     Some((prev, current, next, next2))
   }

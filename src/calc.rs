@@ -17,6 +17,8 @@ pub trait CalcPoints {
       num_of_segments,
       invert_y_with_height,
       invert_x_with_width,
+      hidden_point_at_start,
+      hidden_point_at_end,
     } = *opts;
 
     let need_invert_y = invert_y_with_height.is_some();
@@ -28,7 +30,9 @@ pub trait CalcPoints {
     let num_of_segments_f64 = f64::from(num_of_segments);
 
     for i in 0..(self.len()) {
-      let (prev, current, next, next2) = if let Some(p) = self.points_to_calc(i) {
+      let (prev, current, next, next2) = if let Some(p) =
+        self.points_to_calc(i, &hidden_point_at_start, &hidden_point_at_end)
+      {
         p
       } else {
         continue;

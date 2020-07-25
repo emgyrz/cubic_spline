@@ -5,7 +5,7 @@
 
 Interpolation methods for computation of cubic spline points within the range of a discrete set of known points.
 
-[Online documentation](https://docs.rs/cubic_spline/0.9.2/cubic_spline/)
+[Online documentation](https://docs.rs/cubic_spline/0.9.3/cubic_spline/)
 <br />
 [Demo](https://emgyrz.github.io/cubic_spline/)
 
@@ -126,12 +126,17 @@ See example [here](./www/src/Spline.ts).
 
 
 ### Options
-| Name                 | Type  | Default | Description                                      |
-| -------------------- | :---: | :-----: | ------------------------------------------------ |
-| tension              | `f64` | `0.5`   | Tension                                          |
-| num_of_segments      | `u32` | `16`    | Number of calculated points between known points |
-| invert_x_with_width  | `Option<u32>` | `None`   | If set to `Some(canvas_width)` generated points will be inverted by X-axis.                                          |
-| invert_y_with_height | `Option<u32>` | `None`   | If set to `Some(canvas_height)` generated points will be inverted by Y-axis.                                          |
+| Name                  | Type                | Default | Description                                                                                 |
+| --------------------- | :-----------------: | :-----: | ------------------------------------------------------------------------------------------- |
+| tension               | `f64`               | `0.5`   | Tension                                                                                     |
+| num_of_segments       | `u32`               | `16`    | Number of calculated points between known points                                            |
+| invert_x_with_width   | `Option<u32>`       | `None`  | If set to `Some(canvas_width)` generated points will be inverted by X-axis.                 |
+| invert_y_with_height  | `Option<u32>`       | `None`  | If set to `Some(canvas_height)` generated points will be inverted by Y-axis.                |
+| hidden_point_at_start | `Option<(f64,f64)>` | `None`  | A point that will not be drawn, but the beginning of the graph will bend as if it is there. |
+| hidden_point_at_end   | `Option<(f64,f64)>` | `None`  | A point that will not be drawn, but the end of the graph will bend as if it is there.       |
+
+
+
 
 
 ```rust

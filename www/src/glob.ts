@@ -7,6 +7,8 @@ export type SplineSettings = {
   numOfSegments: number,
   invertYwithHeight: NullNum,
   invertXwithWidth: NullNum,
+  hiddenPointAtStart?: number[],
+  hiddenPointAtEnd?: number[],
 }
 
 

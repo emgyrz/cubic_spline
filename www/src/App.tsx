@@ -19,6 +19,11 @@ interface IState {
 }
 
 const startPoints: PointType[] = [
+  // [300,200],
+  // [400,100],
+  // [500,200],
+  // [400,300],
+  // [300,200],
   [0, 2],
   [123, 32],
   [150, 113],
@@ -50,6 +55,8 @@ class App extends React.Component<{}, IState> {
       numOfSegments: NOS_DEFAULT,
       invertYwithHeight: CANVAS_H,
       invertXwithWidth: null,
+      // hiddenPointAtEnd: [400 ,130 ],
+      // hiddenPointAtStart: [ 400,270 ],
     }
   }
 

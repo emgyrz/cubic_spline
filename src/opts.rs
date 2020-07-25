@@ -18,6 +18,16 @@ pub struct SplineOpts {
   /// If set to Some(canvas_height) generated points will be inverted by Y-axis.
   ///
   pub invert_y_with_height: Option<u32>,
+
+  /// A point that will not be drawn,
+  /// but the beginning of the graph will bend as if it is there.
+  ///
+  pub hidden_point_at_start: Option<(f64, f64)>,
+
+  /// A point that will not be drawn,
+  /// but the end of the graph will bend as if it is there.
+  ///
+  pub hidden_point_at_end: Option<(f64, f64)>,
 }
 
 impl Default for SplineOpts {
@@ -39,6 +49,8 @@ impl Default for SplineOpts {
       num_of_segments: 16,
       invert_x_with_width: None,
       invert_y_with_height: None,
+      hidden_point_at_start: None,
+      hidden_point_at_end: None,
     }
   }
 }
@@ -80,6 +92,18 @@ impl SplineOptsBuilder {
   /// Sets invert_y_with_height
   pub fn invert_y_with_height(mut self, val: u32) -> Self {
     self.opts.invert_y_with_height = Some(val);
+    self
+  }
+
+  /// Sets hidden_point_at_start
+  pub fn hidden_point_at_start(mut self, val: (f64, f64)) -> Self {
+    self.opts.hidden_point_at_start = Some(val);
+    self
+  }
+
+  /// Sets hidden_point_at_end
+  pub fn hidden_point_at_end(mut self, val: (f64, f64)) -> Self {
+    self.opts.hidden_point_at_end = Some(val);
     self
   }
 }

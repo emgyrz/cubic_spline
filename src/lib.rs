@@ -119,8 +119,9 @@ impl Spline {
   /// assert_eq!(spline_points.len(), 102);
   /// ```
   pub fn from_flatten_points(points: &[f64], opts: &SplineOpts) -> Vec<f64> {
-    let mut result: SplineResult<f64> =
-      SplineResult::with_capacity((points.len() / 2) * opts.num_of_segments as usize);
+    let mut result: SplineResult<f64> = SplineResult::with_capacity(
+      (points.len() / 2) * opts.num_of_segments as usize,
+    );
 
     SrcPoints::new(points).calc(opts, &mut result);
     result.get()
@@ -143,9 +144,13 @@ impl Spline {
   ///
   /// assert_eq!(*last_y, 200.0_f64);
   /// ```
-  pub fn from_tuples(points: &[(f64, f64)], opts: &SplineOpts) -> Vec<(f64, f64)> {
-    let mut result =
-      SplineResult::<(f64, f64)>::with_capacity(points.len() * opts.num_of_segments as usize);
+  pub fn from_tuples(
+    points: &[(f64, f64)],
+    opts: &SplineOpts,
+  ) -> Vec<(f64, f64)> {
+    let mut result = SplineResult::<(f64, f64)>::with_capacity(
+      points.len() * opts.num_of_segments as usize,
+    );
     SrcPoints::new(points).calc(opts, &mut result);
     result.get()
   }
@@ -191,6 +196,8 @@ pub fn getCurvePoints(
   num_of_segments: Option<u32>,
   invert_x_with_width: Option<u32>,
   invert_y_with_height: Option<u32>,
+  hidden_point_at_start: Option<Vec<f64>>,
+  hidden_point_at_end: Option<Vec<f64>>,
 ) -> Vec<f64> {
   let mut b = SplineOptsBuilder::new();
 
@@ -205,6 +212,16 @@ pub fn getCurvePoints(
   }
   if let Some(h) = invert_y_with_height {
     b = b.invert_y_with_height(h);
+  }
+  if let Some(s) = hidden_point_at_start {
+    if s.len() >= 2 {
+      b = b.hidden_point_at_start((s[0], s[1]));
+    }
+  }
+  if let Some(s) = hidden_point_at_end {
+    if s.len() >= 2 {
+      b = b.hidden_point_at_end((s[0], s[1]));
+    }
   }
 
   Spline::from_flatten_points(&pts, &b.take())

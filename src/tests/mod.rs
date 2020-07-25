@@ -15,11 +15,13 @@ fn bench1() {
 
   let start = Instant::now();
 
-  let points2 = vec![(10.0, 200.0), (256.0, 390.0), (512.0, 10.0), (778.0, 200.0)];
+  let points2 =
+    vec![(10.0, 200.0), (256.0, 390.0), (512.0, 10.0), (778.0, 200.0)];
 
   for _ in 0..10000 {
     let pts = SrcPoints::<(f64, f64)>::new(&points2);
-    let mut result = SplineResult::<(f64, f64)>::with_capacity(points.len() * 16);
+    let mut result =
+      SplineResult::<(f64, f64)>::with_capacity(points.len() * 16);
     pts.calc(&opts, &mut result);
     v.push(result)
     // v.push(Spline::from_flatten_points(&points, &opts))
