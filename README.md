@@ -3,92 +3,80 @@
 [![Crates.io](https://img.shields.io/crates/v/cubic_spline.svg)](https://crates.io/crates/cubic_spline/)
 [![npm](https://img.shields.io/npm/v/cubic-spline-rs.svg)](https://www.npmjs.com/package/cubic-spline-rs)
 
-Interpolation methods for computation of cubic spline points within the range of a discrete set of known points.
+Interpolation method for computation of cubic spline points within
+the range of a discrete set of known points.
 
-[Online documentation](https://docs.rs/cubic_spline/0.9.3/cubic_spline/)
+[Online documentation](https://docs.rs/cubic_spline/0.9.8/cubic_spline/)
+<br />
 <br />
 [Demo](https://emgyrz.github.io/cubic_spline/)
 
 
-#### Example
+### Example
 ```rust
-use cubic_spline::{CalcPoints, SplineOptsBuilder, SplineResult, SrcPoints};
+use cubic_spline::{Points, Point, SplineOpts, TryFrom};
 
-let points = vec![(10.0, 200.0), (256.0, 390.0), (512.0, 10.0), (778.0, 200.0)];
+let source = vec![(10.0, 200.0), (256.0, 390.0), (512.0, 10.0), (778.0, 200.0)];
 
-let opts = SplineOptsBuilder::new()
-  .num_of_segments(16)
-  .take();
+let opts = SplineOpts::new().tension(0.5);
 
-let pts: SrcPoints<(f64, f64)> = SrcPoints::new(&points);
-let mut result = SplineResult::<(f64, f64)>::new();
-pts.calc(&opts, &mut result);
+let mut points = Points::try_from(&source).expect("expect valid points but");
+let result = points.calc_spline(&opts).expect("cant construct spline points");
 
-assert_eq!(result.get().len(), 51);
+assert_eq!(result.get_ref().len(), 49);
 
-//
-// Same as:
-//
-use cubic_spline::{Spline};
-let spline_points = Spline::from_tuples(&points, &opts);
+points.get_mut().push(Point::new(7.7, 1.3));
+points.get_mut()[1].x += 0.79;
+points.invert_vertically(400.0);
 
-assert_eq!(spline_points.len(), 51);
+assert_eq!(points.get_ref()[1].y, 10.0);
+
+let calculated_points = points
+  .calc_spline(&opts.num_of_segments(33))
+  .unwrap();
+
+assert_eq!(calculated_points.into_inner().len(), 133);
+
 ```
 
+For information on how a curve can be constructed and which points to accept,
+see the appropriate structures.
 
 
-For now source and resulting points may be `Vec<f64> - (vec![x,y,x,y,...])` or `Vec<(f64, f64)> - (vec![(x,y),(x,y), ...])`.
-For this types of points there are two helper functions `Spline::from_flatten_points` and `Spline::from_tuples`
 
+## Custom points
 
-### Custom points
+If you already have some points you can implement `From` trait for `Point`
+struct and pass your points directly.
 
-If you allready have some points to avoid unnecessary copying, creating new `Vec` etc. you can implement `GetPoint` trait. And if you need some particular result implement `PushPoint`.
-#### Example
+### Example
 ```rust
-use cubic_spline::{CalcPoints,SrcPoints,SplineResult,PushPoint,GetPoint,SplineOpts};
+use cubic_spline::{SplineOpts, Point, Points};
 
+#[derive(Default)]
 struct MyPoint {
-  pub top: f32,
-  pub left: f32,
-  pub label: Option<String>,
+  vertical: u8,
+  horizontal: u8,
+  color: String,
 }
 
-struct MyResult<T>(T);
-struct MySrcPoints<T>(T);
-
-impl<'a> GetPoint for MySrcPoints<SrcPoints<'a, MyPoint>> {
-  fn get(&self, index: usize) -> Option<(f64, f64)> {
-    self.0.pts().get(index).and_then(|p| {
-      Some((f64::from(p.left), f64::from(p.top)))
-    })
-  }
-  fn len(&self) -> usize {
-    self.0.pts().len()
+impl<'a> From<&'a MyPoint> for Point {
+  fn from(p: &'a MyPoint) -> Self {
+    Point::new(p.horizontal as f64, p.vertical as f64)
   }
 }
 
-impl PushPoint for MyResult<SplineResult<MyPoint>> {
-  fn push_spline_point(&mut self, x: f64, y: f64) {
-    let calculated_point = MyPoint { top: y as f32, left: x as f32, label: None };
-    self.0.pts().push(calculated_point);
-  }
-}
+let my_points: Vec<MyPoint> = vec![MyPoint::default(),MyPoint::default()];
+let spline = Points::from(&my_points)
+  .calc_spline(&SplineOpts::default())
+  .unwrap();
 
-impl<'a> CalcPoints for MySrcPoints<SrcPoints<'a, MyPoint>> {}
-
-
-let points: Vec<MyPoint> = vec![];
-let pts = MySrcPoints(SrcPoints::new(&points));
-let mut result = MyResult(SplineResult::default());
-pts.calc(&SplineOpts::default(), &mut result);
+assert_eq!(spline.get_ref().len(), 17);
 
 ```
 
-See [here](https://github.com/emgyrz/cubic_spline/tree/master/src/impls) for implementation example
 
-
-### Example for js
+### Example for JS
 ```js
 import { getCurvePoints } from 'cubic-spline-rs'
 
@@ -99,6 +87,7 @@ const points = [10.0, 200.0, 256.0, 390.0, 512.0, 10.0, 778.0, 200.0]
 const curvePoints = getCurvePoints( points, {
   num_of_segments: NUM_OF_SEGMENTS, // *optional
   // tension: 0.5, // *optional
+  // ...  
 } )
 
 ```
@@ -130,28 +119,22 @@ See example [here](./www/src/Spline.ts).
 | --------------------- | :-----------------: | :-----: | ------------------------------------------------------------------------------------------- |
 | tension               | `f64`               | `0.5`   | Tension                                                                                     |
 | num_of_segments       | `u32`               | `16`    | Number of calculated points between known points                                            |
-| invert_x_with_width   | `Option<u32>`       | `None`  | If set to `Some(canvas_width)` generated points will be inverted by X-axis.                 |
-| invert_y_with_height  | `Option<u32>`       | `None`  | If set to `Some(canvas_height)` generated points will be inverted by Y-axis.                |
 | hidden_point_at_start | `Option<(f64,f64)>` | `None`  | A point that will not be drawn, but the beginning of the graph will bend as if it is there. |
 | hidden_point_at_end   | `Option<(f64,f64)>` | `None`  | A point that will not be drawn, but the end of the graph will bend as if it is there.       |
 
 
 
-
-
 ```rust
-use cubic_spline::{SplineOpts, SplineOptsBuilder};
-let opts = SplineOpts {
-  tension: 0.6,
-  ..Default.default()
-};
+use cubic_spline::{SplineOpts};
 
-// or use builder
-
-let opts2 = SplineOptsBuilder::new()
+let options = SplineOpts::new()
+  .tension(0.6)
   .num_of_segments(54)
-  .invert_y_with_height(1080)
-  .take();
+  // .hidden_point_at_start((1.2, 3.1))
+  // .hidden_point_at_end((397.9, 105.5))
+  ;
+
+
 
 ```
 

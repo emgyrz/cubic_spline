@@ -1,27 +1,27 @@
 import * as React from 'react';
 import Point from './Point'
-import { NullNum } from '../glob'
+import PointModel from '../Point'
 
 interface IProps {
-  points: Array<[NullNum, NullNum]>;
-  onChange: (pts: Array<[NullNum, NullNum]>) => void;
+  points: Array<PointModel>;
+  onChange: (pts: Array<PointModel>) => void;
 }
 
 
 class Points extends React.Component<IProps> {
-  handleChange = (res: { idx: number, x: NullNum, y: NullNum }) => {
+  handleChange = (res: { idx: number, point: PointModel }) => {
     const pts = this.props.points.slice(0)
-    pts[res.idx] = [res.x, res.y]
+    pts[res.idx] = res.point
     this.props.onChange(pts)
   }
 
   handleAddClick = () => {
     const pts = this.props.points.slice(0)
-    let last: [NullNum, NullNum] = [10, 10]
+    let last  = PointModel.def()
     if (pts.length !== 0) {
       last = pts[pts.length - 1]
     }
-    pts.push([last[0], last[1]])
+    pts.push(last.set({x: last.x, y: last.y}))
     this.props.onChange(pts)
   }
 
@@ -33,12 +33,11 @@ class Points extends React.Component<IProps> {
 
   render() {
     const { points } = this.props
-    const pts = points.map(([x, y], idx) => (
+    const pts = points.map((p, idx) => (
       <Point
         key={idx}
         idx={idx}
-        x={x}
-        y={y}
+        point={p}
         onChange={this.handleChange}
         onDel={this.handleDel}
       />
@@ -51,11 +50,14 @@ class Points extends React.Component<IProps> {
           <div className="field-label is-normal">
           </div>
           <div className="field-body" style={{ alignItems: 'center' }}>
-            <div className="field" style={{ maxWidth: 100 }}>
+            <div className="field" style={{ maxWidth: 50 }}>
                 x
             </div>
-            <div className="field" style={{ maxWidth: 100 }}>
+            <div className="field" style={{ maxWidth: 50 }}>
                 y
+            </div>
+            <div className="field" style={{ maxWidth: 50 }}>
+              custom tension
             </div>
           </div>
         </div>

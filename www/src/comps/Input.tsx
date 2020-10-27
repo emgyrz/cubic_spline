@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { isNum, castNum, NullNum } from '../glob'
+import {isNum, castNum, NullNum, getNullableNum} from '../glob'
 
 interface IProps extends React.HTMLAttributes<HTMLInputElement> {
   value: NullNum
@@ -24,9 +24,7 @@ class Inp extends React.Component<IProps, {}> {
 
   handleChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
     const value = ev.currentTarget.value
-    let val: NullNum = parseFloat(value)
-    val = isNum(val) ? null : val
-    this.props.onInpChange(val)
+    this.props.onInpChange(getNullableNum(parseFloat(value)))
   }
 
   handleWheel = (ev: WheelEvent) => {

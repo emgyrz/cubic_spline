@@ -12,6 +12,7 @@ Cargo.lock
 /www/dist
 /www/pkg
 /www/yarn.lock
+/www/package-lock.json
 
 
 **/npm-debug.log*

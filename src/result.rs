@@ -1,5 +1,7 @@
+///
 /// Wrapper for resulting vector of "points".
 /// "Points" type may be any which implements `PushPoint` trait
+#[deprecated(since = "1.0.0")]
 pub struct SplineResult<T> {
   pts: Vec<T>,
 }
@@ -15,6 +17,7 @@ impl<T> SplineResult<T> {
   ///
   /// assert!(result.pts().is_empty());
   /// ```
+
   pub fn new() -> Self {
     SplineResult { pts: Vec::new() }
   }
@@ -32,6 +35,7 @@ impl<T> SplineResult<T> {
   ///
   /// assert!(result.pts().is_empty());
   /// ```
+
   pub fn with_capacity(capacity: usize) -> Self {
     SplineResult {
       pts: Vec::with_capacity(capacity),
@@ -39,17 +43,21 @@ impl<T> SplineResult<T> {
   }
 
   /// Moves the resulting point out of the `SplineResult`
+
   pub fn get(self) -> Vec<T> {
     self.pts
   }
 
   /// Get mutable referense to inner `Vec<T>`
+
   pub fn pts(&mut self) -> &mut Vec<T> {
     self.pts.as_mut()
   }
 }
 
+///
 /// Trait that contains one method to push `x` and `y` to SplineResult ( or your result data )
+#[deprecated(since = "1.0.0")]
 pub trait PushPoint {
   ///
   /// # Example
@@ -79,6 +87,7 @@ pub trait PushPoint {
   /// }
   ///
   /// ```
+
   fn push_spline_point(&mut self, x: f64, y: f64);
 }
 

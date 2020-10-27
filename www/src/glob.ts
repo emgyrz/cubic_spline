@@ -1,9 +1,9 @@
 
 export type NullNum = number | null
-export type PointType = [NullNum, NullNum]
 export type ValidPointType = [number, number]
 export type SplineSettings = {
   tension: number,
+  custom_tensions: number[],
   numOfSegments: number,
   invertYwithHeight: NullNum,
   invertXwithWidth: NullNum,
@@ -23,5 +23,9 @@ export function isNum(n: any): n is number {
 
 export function castNum(n: any, def?: number): number {
   return isNum(n) ? n : (isNum(def) ? def : 0)
+}
+
+export function getNullableNum(n: any): null | number {
+  return isNum(n) ? n : null
 }
 

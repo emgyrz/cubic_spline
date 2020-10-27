@@ -66,7 +66,7 @@ async function start() {
   await editPackageJson()
 }
 
-start().catch(err => console.log(err))
+start().catch(console.error)
 
 
 

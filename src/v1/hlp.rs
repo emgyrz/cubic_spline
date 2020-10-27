@@ -25,7 +25,6 @@ pub fn tuples_to_flatten(tuples: &[(f64, f64)]) -> Vec<f64> {
 
   for (x, y) in tuples {
     result.push(*x);
-
     result.push(*y);
   }
 

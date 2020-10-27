@@ -1,6 +1,6 @@
 [package]
 name = "cubic_spline"
-version = "0.9.3"
+version = "0.9.8"
 authors = ["mz <emgyrz@gmail.com>"]
 edition = "2018"
 description = "Function that calculates curve points for cubic spline"
@@ -15,9 +15,13 @@ readme = "README.md"
 [dependencies]
 
 #[cfg(target_arch = "wasm32")]
-wasm-bindgen = "0.2.65"
+wasm-bindgen = "0.2.68"
 
 [lib]
 
 #[cfg(target_arch = "wasm32")]
 crate-type = ["cdylib", "rlib"]
+
+
+[package.metadata.wasm-pack.profile.release]
+wasm-opt = false

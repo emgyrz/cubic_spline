@@ -1,84 +1,69 @@
-//! Interpolation methods for computation of cubic spline points within the range of a discrete set of known points.
+//!
+//! Interpolation method for computation of cubic spline points within
+//! the range of a discrete set of known points.
 //!
 //! [**Demo**](https://emgyrz.github.io/cubic_spline/)
 //!
 //! # Example
 //! ```
-//! use cubic_spline::{CalcPoints, SplineOpts, SplineResult, SrcPoints};
+//! use cubic_spline::{Points, Point, SplineOpts, TryFrom};
 //!
-//! let points = vec![(10.0, 200.0), (256.0, 390.0), (512.0, 10.0), (778.0, 200.0)];
+//! let source = vec![(10.0, 200.0), (256.0, 390.0), (512.0, 10.0), (778.0, 200.0)];
 //!
-//! let opts = SplineOpts {
-//!   num_of_segments: 16,
-//!   ..Default::default()
-//! };
+//! let opts = SplineOpts::new().tension(0.5);
 //!
-//! let pts: SrcPoints<(f64, f64)> = SrcPoints::new(&points);
-//! let mut result = SplineResult::<(f64, f64)>::new();
-//! pts.calc(&opts, &mut result);
+//! let mut points = Points::try_from(&source).expect("expect valid points but");
+//! let result = points.calc_spline(&opts).expect("cant construct spline points");
 //!
-//! assert_eq!(result.get().len(), 51);
+//! assert_eq!(result.get_ref().len(), 49);
 //!
-//! //
-//! // Same as:
-//! //
-//! use cubic_spline::{Spline};
-//! let spline_points = Spline::from_tuples(&points, &opts);
+//! points.get_mut().push(Point::new(7.7, 1.3));
+//! points.get_mut()[1].x += 0.79;
+//! points.invert_vertically(400.0);
 //!
-//! assert_eq!(spline_points.len(), 51);
+//! assert_eq!(points.get_ref()[1].y, 10.0);
+//!
+//! let calculated_points = points
+//!   .calc_spline(&opts.num_of_segments(33))
+//!   .unwrap();
+//!
+//! assert_eq!(calculated_points.into_inner().len(), 133);
+//!
 //! ```
 //!
-//!
-//!
-//! For now source and resulting points may be `Vec<f64> - (vec![x,y,x,y,...])` or `Vec<(f64, f64)> - (vec![(x,y),(x,y), ...])`.
-//! For this types of points there are two helper functions `Spline::from_flatten_points` and `Spline::from_tuples`
-//!
+//! For information on how a curve can be constructed and which points to accept,
+//! see the appropriate structures.
 //!
 //! ## Custom points
 //!
-//! If you allready have some points to avoid unnecessary copying, creating new `Vec` etc. you can implement `GetPoint` trait. And if you need some particular result implement `PushPoint`.
+//! If you already have some points you can implement `From` trait for `Point`
+//! struct and pass your points directly.
+//!
 //! # Example
 //! ```
-//! use cubic_spline::{CalcPoints,SrcPoints,SplineResult,PushPoint,GetPoint,SplineOpts};
+//! use cubic_spline::{SplineOpts, Point, Points};
 //!
+//! #[derive(Default)]
 //! struct MyPoint {
-//!   pub top: f32,
-//!   pub left: f32,
-//!   pub label: Option<String>,
+//!   vertical: u8,
+//!   horizontal: u8,
+//!   color: String,
 //! }
 //!
-//! struct MyResult<T>(T);
-//! struct MySrcPoint<T>(T);
-//!
-//! impl<'a> GetPoint for MySrcPoint<SrcPoints<'a, MyPoint>> {
-//!   fn get(&self, index: usize) -> Option<(f64, f64)> {
-//!     self.0.pts().get(index).and_then(|p| {
-//!       Some((f64::from(p.left), f64::from(p.top)))
-//!     })
-//!   }
-//!   fn len(&self) -> usize {
-//!     self.0.pts().len()
+//! impl<'a> From<&'a MyPoint> for Point {
+//!   fn from(p: &'a MyPoint) -> Self {
+//!     Point::new(p.horizontal as f64, p.vertical as f64)
 //!   }
 //! }
 //!
-//! impl PushPoint for MyResult<SplineResult<MyPoint>> {
-//!   fn push_spline_point(&mut self, x: f64, y: f64) {
-//!     let calculated_point = MyPoint { top: y as f32, left: x as f32, label: None };
-//!     self.0.pts().push(calculated_point);
-//!   }
-//! }
+//! let my_points: Vec<MyPoint> = vec![MyPoint::default(),MyPoint::default()];
+//! let spline = Points::from(&my_points)
+//!   .calc_spline(&SplineOpts::default())
+//!   .unwrap();
 //!
-//! impl<'a> CalcPoints for MySrcPoint<SrcPoints<'a, MyPoint>> {}
-//!
-//!
-//! let points: Vec<MyPoint> = vec![];
-//! let pts = MySrcPoint(SrcPoints::new(&points));
-//! let mut result = MyResult(SplineResult::default());
-//! pts.calc(&SplineOpts::default(), &mut result);
+//! assert_eq!(spline.get_ref().len(), 17);
 //!
 //! ```
-//! See [here](https://github.com/emgyrz/cubic_spline/tree/master/src/impls) for implementation example
-//!
 //!
 
 mod calc;
@@ -87,20 +72,25 @@ mod impls;
 mod opts;
 mod points;
 mod result;
+mod v1;
+
+pub use v1::{Error, Point, Points, Result, TryFrom, TryInto, DEFAULT_APPROX_EQ_PRECISION};
 
 #[cfg(test)]
 mod tests;
 
-#[cfg(target_arch = "wasm32")]
-use wasm_bindgen::prelude::*;
-
 pub use calc::CalcPoints;
-pub use opts::{SplineOpts, SplineOptsBuilder};
+pub use opts::{SplineOpts, SplineOptsBuilder, DEFAULT_SEGMENTS, DEFAULT_TENSION};
 pub use points::{GetPoint, SrcPoints};
 pub use result::{PushPoint, SplineResult};
 
+///
 /// Collection for calculate spline points
-pub struct Spline();
+#[deprecated(
+  since = "1.0.0",
+  note = "Please use the `calc_spline` function instead"
+)]
+pub struct Spline;
 
 impl Spline {
   /// Calculates flat vector of points from known points
@@ -118,12 +108,16 @@ impl Spline {
   ///
   /// assert_eq!(spline_points.len(), 102);
   /// ```
+  #[deprecated(
+    since = "1.0.0",
+    note = "Please use the `calc_spline` and `Points::try_from_flatten` instead"
+  )]
   pub fn from_flatten_points(points: &[f64], opts: &SplineOpts) -> Vec<f64> {
-    let mut result: SplineResult<f64> = SplineResult::with_capacity(
-      (points.len() / 2) * opts.num_of_segments as usize,
-    );
+    let mut result: SplineResult<f64> =
+      SplineResult::with_capacity((points.len() / 2) * opts.num_of_segments as usize);
 
     SrcPoints::new(points).calc(opts, &mut result);
+
     result.get()
   }
 
@@ -144,14 +138,16 @@ impl Spline {
   ///
   /// assert_eq!(*last_y, 200.0_f64);
   /// ```
-  pub fn from_tuples(
-    points: &[(f64, f64)],
-    opts: &SplineOpts,
-  ) -> Vec<(f64, f64)> {
-    let mut result = SplineResult::<(f64, f64)>::with_capacity(
-      points.len() * opts.num_of_segments as usize,
-    );
+  #[deprecated(
+    since = "1.0.0",
+    note = "Please use the `calc_spline` function instead"
+  )]
+  pub fn from_tuples(points: &[(f64, f64)], opts: &SplineOpts) -> Vec<(f64, f64)> {
+    let mut result =
+      SplineResult::<(f64, f64)>::with_capacity(points.len() * opts.num_of_segments as usize);
+
     SrcPoints::new(points).calc(opts, &mut result);
+
     result.get()
   }
 
@@ -167,6 +163,7 @@ impl Spline {
   ///
   /// assert_eq!( tuples, vec![(256.0, 390.0), (512.0, 10.0)] );
   /// ```
+  #[deprecated(since = "1.0.0")]
   pub fn convert_flatten_to_tuples(pts: &[f64]) -> Vec<(f64, f64)> {
     convert::flatten_to_tuples(pts)
   }
@@ -183,46 +180,69 @@ impl Spline {
   ///
   /// assert_eq!( points, vec![256.0, 390.0, 512.0, 10.0] );
   /// ```
+  #[deprecated(since = "1.0.0")]
   pub fn convert_tuples_to_flatten(tuples: &[(f64, f64)]) -> Vec<f64> {
     convert::tuples_to_flatten(tuples)
   }
 }
 
 #[cfg(target_arch = "wasm32")]
+use wasm_bindgen::prelude::*;
+
+#[cfg(target_arch = "wasm32")]
+#[allow(clippy::too_many_arguments, non_snake_case)]
 #[wasm_bindgen]
 pub fn getCurvePoints(
   pts: Vec<f64>,
-  tension: Option<f64>,
   num_of_segments: Option<u32>,
-  invert_x_with_width: Option<u32>,
-  invert_y_with_height: Option<u32>,
+  tension: Option<f64>,
+  custom_tensions: Option<Vec<f64>>,
+  invert_x_with_width: Option<f64>,
+  invert_y_with_height: Option<f64>,
   hidden_point_at_start: Option<Vec<f64>>,
   hidden_point_at_end: Option<Vec<f64>>,
 ) -> Vec<f64> {
-  let mut b = SplineOptsBuilder::new();
+  let mut b = SplineOpts::new();
 
   if let Some(t) = tension {
     b = b.tension(t);
   }
+
   if let Some(n) = num_of_segments {
     b = b.num_of_segments(n);
   }
-  if let Some(w) = invert_x_with_width {
-    b = b.invert_x_with_width(w);
-  }
-  if let Some(h) = invert_y_with_height {
-    b = b.invert_y_with_height(h);
-  }
+
   if let Some(s) = hidden_point_at_start {
     if s.len() >= 2 {
       b = b.hidden_point_at_start((s[0], s[1]));
     }
   }
+
   if let Some(s) = hidden_point_at_end {
     if s.len() >= 2 {
       b = b.hidden_point_at_end((s[0], s[1]));
     }
   }
 
-  Spline::from_flatten_points(&pts, &b.take())
+  let mut pts = Points::try_from_flatten(&pts).unwrap();
+
+  if let Some(w) = invert_x_with_width {
+    pts.invert_horizontally(w);
+  }
+
+  if let Some(h) = invert_y_with_height {
+    pts.invert_vertically(h);
+  }
+
+  if let Some(ct) = custom_tensions {
+    ct.iter().enumerate().for_each(|(i, t)| {
+      if *t > -100.0 {
+        pts.get_mut().get_mut(i).iter_mut().for_each(|p| {
+          p.tension = Some(*t);
+        });
+      }
+    });
+  }
+
+  calc_spline(&pts, &b).into()
 }

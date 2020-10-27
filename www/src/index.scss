@@ -3,8 +3,10 @@
 body {
   margin: 0;
   padding: 0;
-  // background-color: #282c34;
+   background-color: #353535;
   min-height: 100vh;
+
+  color: white;
 
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
@@ -24,6 +26,10 @@ code {
   padding: 40px 0;
   margin: 0 auto;
 
+  .title, .subtitle, .field-label label {
+    color: #fff;
+  }
+
   h1.title {
     margin-bottom: 0;
   }
@@ -33,12 +39,14 @@ code {
   }
 
 
+
 }
 
+
 canvas {
-  border-radius: 7px;
+  border-radius: 1px;
   box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
-  background: #ECEFF1;
+  background: #2a2a2a;
 }
 
 .canvasWrp {
@@ -48,7 +56,7 @@ canvas {
     display: block;
     position: absolute;
     font-size: 12px;
-    color: #aaa;
+    color: #fff;
     font-family: monospace;
   }
 
@@ -76,6 +84,10 @@ canvas {
     flex-direction: row;
     align-items: center;
     margin-right: 30px;
+    color: #90a4ae;
+    &:hover {
+      color: #cfd8dc;
+    }
   }
 }
 
@@ -93,28 +105,36 @@ canvas {
     margin-bottom: 3px;
     input {
       font-size: 12px;
+      background: #37474f;
+      color: #eceff1;
+      border-color: #263238;
     }
   }
 
   .addBtn {
     margin-top: 15px;
-    width: 300px;
+    margin-left: 54px;
+    width: 175px;
     font-size: 13px;
+    border-color: #039be5;
+    color: #039be5;
+
   }
 }
 
 .settings {
   .field {
     // align-items: center;
-    background: #f1f1f1;
+    background: #eceff1;
     font-family: monospace;
-    border-radius: 4px;
+    border-radius: 1px;
     line-height: 3;
     padding: 0 10px;
 
     &.range {
       .val {
         margin-left: auto;
+        color: #37474f;
         display: inline-block;
       }
     }

@@ -4,6 +4,7 @@ impl<'a> GetPoint for SrcPoints<'a, (f64, f64)> {
   fn get(&self, index: usize) -> Option<(f64, f64)> {
     self.pts().get(index).cloned()
   }
+
   fn len(&self) -> usize {
     self.pts().len()
   }
