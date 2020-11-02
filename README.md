@@ -10,6 +10,7 @@ the range of a discrete set of known points.
 <br />
 [Demo](https://emgyrz.github.io/cubic_spline/)
 
+![example](img.png)
 
 ### Example
 ```rust
