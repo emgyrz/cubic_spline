@@ -8,7 +8,6 @@ the range of a discrete set of known points.
 
 [Online documentation](https://docs.rs/cubic_spline/0.9.8/cubic_spline/)
 <br />
-<br />
 [Demo](https://emgyrz.github.io/cubic_spline/)
 
 
@@ -137,10 +136,6 @@ let options = SplineOpts::new()
 
 
 ```
-
-
-
-##### Enjoy using!
 
 ### License
 

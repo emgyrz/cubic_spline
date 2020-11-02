@@ -1,6 +1,5 @@
 mod calc;
 mod err;
-mod hlp;
 mod points;
 mod points_iter;
 mod tfti;

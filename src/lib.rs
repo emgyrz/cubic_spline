@@ -17,8 +17,11 @@
 //!
 //! assert_eq!(result.get_ref().len(), 49);
 //!
-//! points.get_mut().push(Point::new(7.7, 1.3));
-//! points.get_mut()[1].x += 0.79;
+//! let inner_vec: &mut Vec<Point> = points.get_mut();
+//! inner_vec.push(Point::new(7.7, 1.3));
+//! inner_vec[1].x += 0.79;
+//! inner_vec.last_mut().iter_mut().for_each(|mut p| {p.tension = Some(0.7);});
+//!
 //! points.invert_vertically(400.0);
 //!
 //! assert_eq!(points.get_ref()[1].y, 10.0);

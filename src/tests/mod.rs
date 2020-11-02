@@ -1,4 +1,4 @@
-use crate::{CalcPoints, Error, Points, Spline, SplineOpts, SplineResult, SrcPoints, TryFrom};
+use crate::{CalcPoints, Error, Points, SplineOpts, SplineResult, SrcPoints, TryFrom};
 
 mod data_flatten;
 mod data_tuples;
