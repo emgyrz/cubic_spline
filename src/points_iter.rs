@@ -14,7 +14,7 @@ impl<'a> PointsIter<'a> {
   pub(crate) fn new(points: &'a Points, opts: &'a SplineOpts) -> Self {
     let pts = points.get_ref();
     let curr = &pts[0];
-    let prev = opts.hidden_point_at_start.as_ref().unwrap_or(&curr);
+    let prev = opts.get_hidden_point_at_start().unwrap_or(&curr);
     let next = &pts[1];
     let next2 = pts.get(2).unwrap_or(&next);
 
@@ -25,7 +25,7 @@ impl<'a> PointsIter<'a> {
       index: 0,
       points,
       current,
-      hidden_point_at_end: opts.hidden_point_at_end.as_ref(),
+      hidden_point_at_end: opts.get_hidden_point_at_end(),
     }
   }
 

@@ -12,37 +12,42 @@ the range of a discrete set of known points.
 
 ![example](img.png)
 
-### Example
+## Example
 ```rust
 use cubic_spline::{Points, Point, SplineOpts, TryFrom};
 
-let source = vec![(10.0, 200.0), (256.0, 390.0), (512.0, 10.0), (778.0, 200.0)];
 
-let opts = SplineOpts::new().tension(0.5);
+fn main() {
+  let source = vec![(10.0, 200.0), (256.0, 390.0), (512.0, 10.0), (778.0, 200.0)];
+  
+  let opts = SplineOpts::new()
+    .tension(0.5);
+  
+  let mut points = Points::try_from(&source).expect("expect valid points but");
+  let result = points.calc_spline(&opts).expect("cant construct spline points");
+  
+  assert_eq!(result.get_ref().len(), 49);
+  
+  let inner_vec: &mut Vec<Point> = points.get_mut();
+  inner_vec.push(Point::new(7.7, 1.3));
+  inner_vec[1].x += 0.79;
+  inner_vec.last_mut().iter_mut().for_each(|mut p| {p.tension = Some(0.7);});
+  
+  points.invert_vertically(400.0);
+  
+  assert_eq!(points.get_ref()[1].y, 10.0);
+  
+  let calculated_points = points
+    .calc_spline(&opts.num_of_segments(33))
+    .unwrap();
+  
+  assert_eq!(calculated_points.into_inner().len(), 133);
 
-let mut points = Points::try_from(&source).expect("expect valid points but");
-let result = points.calc_spline(&opts).expect("cant construct spline points");
-
-assert_eq!(result.get_ref().len(), 49);
-
-points.get_mut().push(Point::new(7.7, 1.3));
-points.get_mut()[1].x += 0.79;
-points.invert_vertically(400.0);
-
-assert_eq!(points.get_ref()[1].y, 10.0);
-
-let calculated_points = points
-  .calc_spline(&opts.num_of_segments(33))
-  .unwrap();
-
-assert_eq!(calculated_points.into_inner().len(), 133);
-
+}
 ```
 
 For information on how a curve can be constructed and which points to accept,
 see the appropriate structures.
-
-
 
 ## Custom points
 
@@ -66,17 +71,26 @@ impl<'a> From<&'a MyPoint> for Point {
   }
 }
 
-let my_points: Vec<MyPoint> = vec![MyPoint::default(),MyPoint::default()];
-let spline = Points::from(&my_points)
-  .calc_spline(&SplineOpts::default())
-  .unwrap();
-
-assert_eq!(spline.get_ref().len(), 17);
+fn main() {
+  let my_points: Vec<MyPoint> = vec![MyPoint::default(),MyPoint::default()];
+  let spline = Points::from(&my_points)
+    .calc_spline(&SplineOpts::default())
+    .unwrap();
+  
+  assert_eq!(spline.get_ref().len(), 17);
+}
 
 ```
 
 
-### Example for JS
+
+## Use in Javascript
+
+It also compiled as wasm module. And you can use it in your js code but not completely.
+Now available only one function
+
+
+
 ```js
 import { getCurvePoints } from 'cubic-spline-rs'
 
@@ -127,12 +141,15 @@ See example [here](./www/src/Spline.ts).
 ```rust
 use cubic_spline::{SplineOpts};
 
-let options = SplineOpts::new()
-  .tension(0.6)
-  .num_of_segments(54)
-  // .hidden_point_at_start((1.2, 3.1))
-  // .hidden_point_at_end((397.9, 105.5))
-  ;
+fn main() {
+  let options = SplineOpts::new()
+    .tension(0.6)
+    .num_of_segments(54)
+    // .hidden_point_at_start((1.2, 3.1))
+    // .hidden_point_at_end((397.9, 105.5))
+    ;
+
+}
 
 
 

@@ -1,77 +1,82 @@
-use super::{result, GetPoint, SplineOpts};
+use crate::{points_iter::PointsIter, Error, Point, Points, Result, SplineOpts};
 
 ///
-/// Trait that includes one provided method to calculate curve points
-/// ```ignore
-/// impl<'a> CalcPoints for SrcPoints<'a, (f64, f64)> {}
+/// The main function that does all the work.
 ///
-/// SrcPoints::new(&points).calc(&spline_options, &mut result_vec);
+/// Returns points of curve constructed within the range of passed points
+/// using cubic spline interpolation.
 ///
+/// # Example
 /// ```
-#[deprecated(since = "1.0.0")]
-pub trait CalcPoints {
-  fn calc<R: result::PushPoint>(&self, opts: &SplineOpts, result: &mut R)
-  where
-    Self: GetPoint,
-  {
-    let SplineOpts {
-      tension,
-      num_of_segments,
-      invert_y_with_height,
-      invert_x_with_width,
-      ..
-      // hidden_point_at_start,
-      // hidden_point_at_end,
-    } = *opts;
+/// use cubic_spline::{Points, TryFrom, SplineOpts};
+///
+/// let src_points = vec![(1.0, 1.0), (3.3, 2.7), (5.1, 0.9)];
+/// let prepared_points = Points::try_from(&src_points).expect("cant convert points");
+///
+/// let options = SplineOpts::new()
+///   .tension(0.5)
+///   .num_of_segments(16);
+///
+/// let calculated_points = prepared_points
+///   .calc_spline(&options)
+///   .expect("cant construct spline points");
+///
+/// assert_eq!(calculated_points.get_ref().len(), 33);
+/// ```
+pub fn calc_spline(points: &Points, opts: &SplineOpts) -> Result<Points> {
+  let points_len = points.get_ref().len();
 
-    let hidden_point_at_start = opts.hidden_point_at_start.as_ref().map(|p| (p.x, p.y));
-    let hidden_point_at_end = opts.hidden_point_at_end.as_ref().map(|p| (p.x, p.y));
+  if points_len < 2 {
+    return Err(Error::TooFewPoints);
+  }
 
-    let need_invert_y = invert_y_with_height.is_some();
-    let canvas_height = invert_y_with_height.unwrap_or_default() as f64;
-    let need_invert_x = invert_x_with_width.is_some();
-    let canvas_width = invert_x_with_width.unwrap_or_default() as f64;
+  let tension_from_opt = opts.get_tension();
+  let num_of_segments = opts.get_num_of_segments();
 
-    let num_of_segments_f64 = f64::from(num_of_segments);
+  let num_of_segments_f64 = f64::from(num_of_segments);
 
-    for i in 0..(self.len()) {
-      let (prev, current, next, next2) =
-        if let Some(p) = self.points_to_calc(i, &hidden_point_at_start, &hidden_point_at_end) {
-          p
-        } else {
-          continue;
-        };
+  // количество сегментов на промежутках между точками
+  // умноженное на количество промежутков
+  // плюс последняя завершающая точка, т.к. функция расчитывает от точки и до точки не включительно
+  let generated_count = (points_len - 1) * (num_of_segments as usize) + 1;
 
-      let t1x = (next.0 - prev.0) * tension;
-      let t2x = (next2.0 - current.0) * tension;
-      let t1y = (next.1 - prev.1) * tension;
-      let t2y = (next2.1 - current.1) * tension;
+  let mut result: Vec<Point> = Vec::with_capacity(generated_count);
 
-      for t in 0..=num_of_segments {
-        let st = f64::from(t) / num_of_segments_f64;
-        let st_pow2 = st.powi(2);
-        let st_pow3 = st.powi(3);
-        let st_pow2x3 = 3.0 * st_pow2;
-        let st_pow3x2 = 2.0 * st_pow3;
+  let iter = PointsIter::new(points, opts);
 
-        let c1 = st_pow3x2 - st_pow2x3 + 1.0;
-        let c2 = -st_pow3x2 + st_pow2x3;
-        let c3 = st_pow3 - 2.0 * st_pow2 + st;
-        let c4 = st_pow3 - st_pow2;
+  for (prev, curr, next, next2) in iter {
+    let tension = curr.tension.unwrap_or(tension_from_opt);
 
-        let mut x = c1 * current.0 + c2 * next.0 + c3 * t1x + c4 * t2x;
-        let mut y = c1 * current.1 + c2 * next.1 + c3 * t1y + c4 * t2y;
+    let t1x = (next.x - prev.x) * tension;
+    let t2x = (next2.x - curr.x) * tension;
+    let t1y = (next.y - prev.y) * tension;
+    let t2y = (next2.y - curr.y) * tension;
 
-        if need_invert_x {
-          x = canvas_width - x;
-        }
+    for t in 0..num_of_segments {
+      let st = f64::from(t) / num_of_segments_f64;
+      let st_pow2 = st.powi(2);
+      let st_pow3 = st.powi(3);
+      let st_pow2x3 = 3.0 * st_pow2;
+      let st_pow3x2 = 2.0 * st_pow3;
 
-        if need_invert_y {
-          y = canvas_height - y;
-        }
+      let c1 = st_pow3x2 - st_pow2x3 + 1.0;
+      let c2 = -st_pow3x2 + st_pow2x3;
+      let c3 = st_pow3 - 2.0 * st_pow2 + st;
+      let c4 = st_pow3 - st_pow2;
 
-        result.push_spline_point(x, y);
-      }
+      let x = c1 * curr.x + c2 * next.x + c3 * t1x + c4 * t2x;
+      let y = c1 * curr.y + c2 * next.y + c3 * t1y + c4 * t2y;
+
+      result.push(Point::new(x, y));
     }
   }
+
+  // проверка лишняя. чтобы не писать unwrap
+  if let Some(last) = points.get_ref().last() {
+    // нужно добавить последнюю, потому что функция расчитывает точки
+    // в промежутке между point1 и point2 включая первую, но не включая крайнюю с конца
+    result.push(Point::new(last.x, last.y));
+  }
+
+  Ok(Points::from(result))
 }

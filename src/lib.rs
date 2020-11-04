@@ -10,7 +10,8 @@
 //!
 //! let source = vec![(10.0, 200.0), (256.0, 390.0), (512.0, 10.0), (778.0, 200.0)];
 //!
-//! let opts = SplineOpts::new().tension(0.5);
+//! let opts = SplineOpts::new()
+//!   .tension(0.5);
 //!
 //! let mut points = Points::try_from(&source).expect("expect valid points but");
 //! let result = points.calc_spline(&opts).expect("cant construct spline points");
@@ -69,183 +70,25 @@
 //! ```
 //!
 
-mod calc;
-mod convert;
-mod impls;
-mod opts;
-mod points;
-mod result;
-mod v1;
-
-pub use v1::{Error, Point, Points, Result, TryFrom, TryInto, DEFAULT_APPROX_EQ_PRECISION};
-
 #[cfg(test)]
 mod tests;
 
-pub use calc::CalcPoints;
-pub use opts::{SplineOpts, SplineOptsBuilder, DEFAULT_SEGMENTS, DEFAULT_TENSION};
-pub use points::{GetPoint, SrcPoints};
-pub use result::{PushPoint, SplineResult};
-
-///
-/// Collection for calculate spline points
-#[deprecated(
-  since = "1.0.0",
-  note = "Please use the `calc_spline` function instead"
-)]
-pub struct Spline;
-
-impl Spline {
-  /// Calculates flat vector of points from known points
-  ///
-  /// Points is vec of `[x, y, x, y, ...]`
-  /// # Example
-  /// ```
-  /// use cubic_spline::{Spline, SplineOpts};
-  ///
-  /// let opts: SplineOpts = Default::default();
-  ///
-  /// let points = vec![10.0, 200.0, 256.0, 390.0, 512.0, 10.0, 778.0, 200.0];
-  ///
-  /// let spline_points = Spline::from_flatten_points(&points, &opts);
-  ///
-  /// assert_eq!(spline_points.len(), 102);
-  /// ```
-  #[deprecated(
-    since = "1.0.0",
-    note = "Please use the `calc_spline` and `Points::try_from_flatten` instead"
-  )]
-  pub fn from_flatten_points(points: &[f64], opts: &SplineOpts) -> Vec<f64> {
-    let mut result: SplineResult<f64> =
-      SplineResult::with_capacity((points.len() / 2) * opts.num_of_segments as usize);
-
-    SrcPoints::new(points).calc(opts, &mut result);
-
-    result.get()
-  }
-
-  /// Calculates vector of point tuples from known points
-  ///
-  /// Points is vec of `[(x, y), (x, y), ...]`
-  /// # Example
-  /// ```
-  /// use cubic_spline::{Spline, SplineOpts};
-  ///
-  /// let opts: SplineOpts = Default::default();
-  ///
-  /// let points = vec![(10.0, 200.0), (256.0, 390.0), (512.0, 10.0), (778.0, 200.0)];
-  ///
-  /// let spline_points = Spline::from_tuples(&points, &opts);
-  ///
-  /// let (last_x, last_y) = spline_points.last().unwrap();
-  ///
-  /// assert_eq!(*last_y, 200.0_f64);
-  /// ```
-  #[deprecated(
-    since = "1.0.0",
-    note = "Please use the `calc_spline` function instead"
-  )]
-  pub fn from_tuples(points: &[(f64, f64)], opts: &SplineOpts) -> Vec<(f64, f64)> {
-    let mut result =
-      SplineResult::<(f64, f64)>::with_capacity(points.len() * opts.num_of_segments as usize);
-
-    SrcPoints::new(points).calc(opts, &mut result);
-
-    result.get()
-  }
-
-  /// Converts flatten points vector to tuples vector.
-  ///
-  /// # Example
-  /// ```
-  /// use cubic_spline::{Spline};
-  ///
-  /// let points = vec![256.0, 390.0, 512.0, 10.0];
-  ///
-  /// let tuples = Spline::convert_flatten_to_tuples(&points);
-  ///
-  /// assert_eq!( tuples, vec![(256.0, 390.0), (512.0, 10.0)] );
-  /// ```
-  #[deprecated(since = "1.0.0")]
-  pub fn convert_flatten_to_tuples(pts: &[f64]) -> Vec<(f64, f64)> {
-    convert::flatten_to_tuples(pts)
-  }
-
-  /// Converts tuples vector to flatten.
-  ///
-  /// # Example
-  /// ```
-  /// use cubic_spline::{Spline};
-  ///
-  /// let tuples = vec![(256.0, 390.0), (512.0, 10.0)];
-  ///
-  /// let points = Spline::convert_tuples_to_flatten(&tuples);
-  ///
-  /// assert_eq!( points, vec![256.0, 390.0, 512.0, 10.0] );
-  /// ```
-  #[deprecated(since = "1.0.0")]
-  pub fn convert_tuples_to_flatten(tuples: &[(f64, f64)]) -> Vec<f64> {
-    convert::tuples_to_flatten(tuples)
-  }
-}
+mod calc;
+mod err;
+mod opts;
+mod points;
+mod points_iter;
+mod tfti;
 
 #[cfg(target_arch = "wasm32")]
-use wasm_bindgen::prelude::*;
+mod wasm;
+
+pub use calc::calc_spline;
+
+pub use err::{Error, Result};
+pub use opts::{SplineOpts, DEFAULT_SEGMENTS, DEFAULT_TENSION};
+pub use points::{Point, Points, DEFAULT_APPROX_EQ_PRECISION};
+pub use tfti::{TryFrom, TryInto};
 
 #[cfg(target_arch = "wasm32")]
-#[allow(clippy::too_many_arguments, non_snake_case)]
-#[wasm_bindgen]
-pub fn getCurvePoints(
-  pts: Vec<f64>,
-  num_of_segments: Option<u32>,
-  tension: Option<f64>,
-  custom_tensions: Option<Vec<f64>>,
-  invert_x_with_width: Option<f64>,
-  invert_y_with_height: Option<f64>,
-  hidden_point_at_start: Option<Vec<f64>>,
-  hidden_point_at_end: Option<Vec<f64>>,
-) -> Vec<f64> {
-  let mut b = SplineOpts::new();
-
-  if let Some(t) = tension {
-    b = b.tension(t);
-  }
-
-  if let Some(n) = num_of_segments {
-    b = b.num_of_segments(n);
-  }
-
-  if let Some(s) = hidden_point_at_start {
-    if s.len() >= 2 {
-      b = b.hidden_point_at_start((s[0], s[1]));
-    }
-  }
-
-  if let Some(s) = hidden_point_at_end {
-    if s.len() >= 2 {
-      b = b.hidden_point_at_end((s[0], s[1]));
-    }
-  }
-
-  let mut pts = Points::try_from_flatten(&pts).unwrap();
-
-  if let Some(w) = invert_x_with_width {
-    pts.invert_horizontally(w);
-  }
-
-  if let Some(h) = invert_y_with_height {
-    pts.invert_vertically(h);
-  }
-
-  if let Some(ct) = custom_tensions {
-    ct.iter().enumerate().for_each(|(i, t)| {
-      if *t > -100.0 {
-        pts.get_mut().get_mut(i).iter_mut().for_each(|p| {
-          p.tension = Some(*t);
-        });
-      }
-    });
-  }
-
-  calc_spline(&pts, &b).into()
-}
+pub use wasm::getCurvePoints;
