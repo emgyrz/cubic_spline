@@ -17,7 +17,7 @@ pub enum Error {
 /// Alias for a `Result` with the error type [`cubic_spline::Error`].
 ///
 /// [`cubic_spline::Error`]: enum.Error.html
-pub type Result<T> = std::result::Result<T, Error>;
+pub type Result<T, E = Error> = std::result::Result<T, E>;
 
 impl Error {
   pub fn msg(&self) -> &'static str {
