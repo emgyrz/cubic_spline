@@ -80,9 +80,6 @@ mod points;
 mod points_iter;
 mod tfti;
 
-#[cfg(target_arch = "wasm32")]
-mod wasm;
-
 pub use calc::calc_spline;
 
 pub use err::{Error, Result};
@@ -90,5 +87,7 @@ pub use opts::{SplineOpts, DEFAULT_SEGMENTS, DEFAULT_TENSION};
 pub use points::{Point, Points, DEFAULT_APPROX_EQ_PRECISION};
 pub use tfti::{TryFrom, TryInto};
 
+#[cfg(target_arch = "wasm32")]
+mod wasm;
 #[cfg(target_arch = "wasm32")]
 pub use wasm::getCurvePoints;

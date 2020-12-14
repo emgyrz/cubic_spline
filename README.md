@@ -123,7 +123,8 @@ for (let i = 2; i < length; i += 2) {
 ctx.stroke()
 ctx.closePath()
 ```
-See example [here](./www/src/Spline.ts).
+
+[comment]: <> (See example [here]&#40;./www/src/Spline.ts&#41;.)
 
 
 
