@@ -67,7 +67,7 @@ struct MyPoint {
 
 impl<'a> From<&'a MyPoint> for Point {
   fn from(p: &'a MyPoint) -> Self {
-    Point::new(p.horizontal as f64, p.vertical as f64)
+    Point::new(&p.horizontal as f64, &p.vertical as f64)
   }
 }
 
