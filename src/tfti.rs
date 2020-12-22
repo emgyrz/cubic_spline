@@ -20,7 +20,7 @@ pub trait TryInto<T>: Sized {
 ///
 /// [Official documentation](https://doc.rust-lang.org/std/convert/trait.TryFrom.html)
 ///
-/// Usually you don't need to implement is yourself.
+/// Usually you don't need to implement it yourself.
 /// This trait here is for safe conversion into [`Points`]
 ///
 /// # Example
